@@ -7,6 +7,8 @@
 template <typename T>
 class MutableArraySequence : virtual public ArraySequence<T>, virtual public MutableSequence<T> {
     public:
+        using value_type = T;
+
         MutableArraySequence(const T* items, int size) : ArraySequence<T>(items, size) {}
         MutableArraySequence() : MutableArraySequence<T>(nullptr, 0) {}
         MutableArraySequence(int size) : MutableArraySequence<T>(nullptr, size) {}
@@ -26,9 +28,9 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
             return this->array->GetSize();
         }
 
-        std::string toString() const override {
-            return this->array->toString();
-        }
+        // std::string toString() const override {
+        //     return this->array->toString();
+        // }
 
         MutableArraySequence<T>* Set(int index, const T& value) override {
             return dynamic_cast<MutableArraySequence<T>*>(Instance()->SetInternal(index, value));
@@ -86,8 +88,8 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
             delete temp_arr;
             return temp;
         }
-        T Reduce(std::function<T(T, T)> f, MutableSequence<T>* other, const T& c) const {
-            return (const_cast<MutableArraySequence<T>*>(this))->Instance()->array->Reduce(f, dynamic_cast<MutableArraySequence<T>*>(other)->array, c);
+        T Reduce(std::function<T(T, T)> f, const T& c) const {
+            return (const_cast<MutableArraySequence<T>*>(this))->Instance()->array->Reduce(f, c);
         }
         template <typename... Sequences>
         MutableArraySequence<std::tuple<T, typename Sequences::value_type...>>* Zip(MutableSequence<T>* first, Sequences*... sequences) const {

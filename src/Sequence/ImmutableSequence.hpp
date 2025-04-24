@@ -14,6 +14,7 @@ class ImmutableSequence : public Sequence<T>{
 
         virtual ImmutableSequence<T>* GetSubSequence(int startIndex, int endIndex) const = 0;
         virtual ImmutableSequence<T>* Concat(ImmutableSequence <T>* other) const = 0;
+        
         virtual ~ImmutableSequence() = default;
 };
 

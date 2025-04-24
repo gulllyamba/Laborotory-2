@@ -181,7 +181,7 @@ class DynamicArray {
         template <typename U>
         DynamicArray<T>* FlatMap(std::function<DynamicArray<T>*(U)> f) const;
         DynamicArray<T>* Where(std::function<bool(T)> f) const;
-        T Reduce(std::function<T(T, T)> f, DynamicArray<T>* other, const T& c) const;
+        T Reduce(std::function<T(T, T)> f, const T& c) const;
 
         template <typename... Arrays>
         DynamicArray<std::tuple<T, typename Arrays::value_type...>>* Zip(const DynamicArray<T>* first, const Arrays*... arrays) const;
@@ -408,11 +408,11 @@ DynamicArray<T>* DynamicArray<T>::Where(std::function<bool(T)> f) const {
 }
 
 template <typename T>
-T DynamicArray<T>::Reduce(std::function<T(T, T)> f, DynamicArray<T>* other, const T& c) const {
-    if (!other || !other->Data || other->Size <= 0) return c;
-    T answer = f(other->Data[0], c);
-    for (int i = 1; i < other->Size; i++) {
-        answer = f(other->Data[i], answer);
+T DynamicArray<T>::Reduce(std::function<T(T, T)> f, const T& c) const {
+    if (!Data || Size <= 0) return c;
+    T answer = f(Data[0], c);
+    for (int i = 1; i < Size; i++) {
+        answer = f(Data[i], answer);
     }
     return answer;
 }

@@ -170,7 +170,7 @@ class LinkedList {
         template <typename U>
         LinkedList<T>* FlatMap(std::function<LinkedList<T>*(U)> f) const;
         LinkedList<T>* Where(std::function<bool(T)> f) const;
-        T Reduce(std::function<T(T, T)> f, const LinkedList<T>* other, const T& c) const;
+        T Reduce(std::function<T(T, T)> f, const T& c) const;
 
         template <typename... Lists>
         LinkedList<std::tuple<T, typename Lists::value_type...>>* Zip(const LinkedList<T>* first, const Lists*... lists) const;
@@ -193,7 +193,7 @@ class LinkedList {
 template <typename T>
 LinkedList<T>::LinkedList(const T* items, int count) {
     if (count < 0) throw std::invalid_argument("Size cannot be negative");
-    else if (count == 0 || !items) {
+    else if (count == 0) {
         Head = nullptr;
         Last = nullptr;
         Size = 0;
@@ -495,11 +495,11 @@ LinkedList<T>* LinkedList<T>::Where(std::function<bool(T)> f) const {
 }
 
 template <typename T>
-T LinkedList<T>::Reduce(std::function<T(T, T)> f, const LinkedList<T>* other, const T& c) const {
-    if (!other || !other->Head || !other->Last || other->Size <= 0) return c;
-    T answer = f(other->Head->Value, c);
-    TNode<T>* Actual_Node = other->Head->Next_Node;
-    for (int i = 1; i < other->Size; i++) {
+T LinkedList<T>::Reduce(std::function<T(T, T)> f, const T& c) const {
+    if (!Head || !Last || Size <= 0) return c;
+    T answer = f(Head->Value, c);
+    TNode<T>* Actual_Node = Head->Next_Node;
+    for (int i = 1; i < Size; i++) {
         answer = f(Actual_Node->Value, answer);
         Actual_Node = Actual_Node->Next_Node;
     }

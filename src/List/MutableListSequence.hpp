@@ -28,9 +28,9 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
             return this->list->GetSize();
         }
 
-        std::string toString() const override {
-            return this->list->toString();
-        }
+        // std::string toString() const override {
+        //     return this->list->toString();
+        // }
 
         MutableListSequence<T>* Set(int index, const T& value) override {
             return dynamic_cast<MutableListSequence<T>*>(Instance()->SetInternal(index, value));
@@ -88,8 +88,8 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
             delete temp_list;
             return temp;
         }
-        T Reduce(std::function<T(T, T)> f, MutableSequence<T>* other, const T& c) const {
-            return (const_cast<MutableListSequence<T>*>(this))->Instance()->list->Reduce(f, dynamic_cast<MutableListSequence<T>*>(other)->list, c);
+        T Reduce(std::function<T(T, T)> f, const T& c) const {
+            return (const_cast<MutableListSequence<T>*>(this))->Instance()->list->Reduce(f, c);
         }
         template <typename... Sequences>
         MutableListSequence<std::tuple<T, typename Sequences::value_type...>>* Zip(MutableSequence<T>* first, Sequences*... sequences) const {

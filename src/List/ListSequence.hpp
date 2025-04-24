@@ -7,7 +7,6 @@
 template <typename T>
 class ListSequence : public Sequence<T> {
     protected:
-        LinkedList<T>* list;
 
         ListSequence<T>* SetInternal(int index, const T& value) {
             list->Set(index, value);
@@ -59,6 +58,8 @@ class ListSequence : public Sequence<T> {
         virtual ~ListSequence() {
             if (list) delete list;
         }
+
+        LinkedList<T>* list;
 };
 
 #endif // LISTSEQUENCE_HPP

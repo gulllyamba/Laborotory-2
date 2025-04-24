@@ -2,41 +2,288 @@
 #include "Array/ImmutableArraySequence.hpp"
 #include "List/MutableListSequence.hpp"
 #include <cmath>
+template <typename T>
+std::string toString(MutableListSequence<T>* list) {
+    return list->list->toString();
+}
+template <typename T>
+std::string toString(const MutableListSequence<T>& list) {
+    return list.list->toString();
+}
+template <typename T>
+std::string toString(MutableArraySequence<T>* array) {
+    return array->array->toString();
+}
+template <typename T>
+std::string toString(const MutableArraySequence<T>& array) {
+    return array.array->toString();
+}
+template <typename T>
+std::string toString(ImmutableArraySequence<T>* array) {
+    return array->array->toString();
+}
+template <typename T>
+std::string toString(const ImmutableArraySequence<T>& array) {
+    return array.array->toString();
+}
 
 int main() {
-    int items[] = {1, 2, 3};
-    MutableListSequence<int>* A = new MutableListSequence<int>(items, 3);
-    std::cout << "A: " <<  A->toString() << "\n";
-    std::function<int(int)> square = [](int x) ->int {return x * x;};
-    std::function<bool(int)> If = [](int x) ->int {return x > 0;};
-    std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
-    MutableListSequence<int>* C = A->Map(square);
-    MutableListSequence<int>* D = A->Where(If);
-    std::cout << "Map: " << C->toString() << "\n";
-    std::cout << "Where: " << D->toString() << "\n";
-    std::cout << "Reduce: " << A->Reduce(foo, A, 4) << "\n";
+    //  IMMUTABLE ARRAY SEQUENCE
 
-    std::vector<std::string> temp(5, "1234");
-    MutableListSequence<std::string>* result = new MutableListSequence<std::string>();
-    result = result->From(temp);
-    std::cout << "From: " << result->toString() << "\n";
-    MutableListSequence<int>* B = result->Map<int>([](std::string s){
-        return std::atoi(s.c_str());
-    });
-    std::cout << "Map из типа в тип: " << B->toString() << '\n';
+    // int items[] = {1, 2, 3};
+    // ImmutableArraySequence<int>* A = new ImmutableArraySequence<int>(items, 3);
+    // std::cout << "A: " << toString(A) << "\n";
+    // ImmutableArraySequence<int>* B = A->Set(1, 100);
+    // std::cout << "B: " << toString(B) << "\n";
+    // ImmutableArraySequence<int>* C = A->Append(999);
+    // std::cout << "C: " << toString(C) << "\n";
+    // ImmutableArraySequence<int>* D = A->Prepend(999);
+    // std::cout << "D: " << toString(D) << "\n";
+    // ImmutableArraySequence<int>* E = A->InsertAt(1, 100);
+    // std::cout << "E: " << toString(E) << "\n";
+    // ImmutableArraySequence<int>* F = A->Resize(1);
+    // std::cout << "F: " << toString(F) << "\n";
+    // ImmutableArraySequence<int>* con = A->Concat(B);
+    // std::cout << "Concat: " << toString(con) << "\n";
+    // ImmutableArraySequence<int>* sub = con->GetSubSequence(1, 5);
+    // std::cout << "SubSequence: " << toString(sub) << "\n"; 
 
-    int aaa[] = {123, 345, 678};
-    MutableListSequence<int>* F = new MutableListSequence<int>(aaa, 3);
-    MutableListSequence<int>* answer = F->FlatMap<int>([](int n) {
-        LinkedList<int>* tmp = new LinkedList<int>();
-        n = abs(n);
-        while (n > 0) {
-            tmp->Append(n % 10);
-            n /= 10;
-        }
-        return tmp;
-    });
-    std::cout << "FlatMap: " << answer->toString() << "\n";
+    // delete A;
+    // delete B;
+    // delete C;
+    // delete D;
+    // delete E;
+    // delete F;
+    // delete con;
+    // delete sub;
+
+    // int items[] = {1, 2, 3};
+    // ImmutableArraySequence<int>* A = new ImmutableArraySequence<int>(items, 3);
+    // std::cout << "A: " << toString(A) << "\n";
+    // std::function<int(int)> square = [](int x) ->int {return x * x;};
+    // std::function<bool(int)> If = [](int x) ->int {return x < 0;};
+    // std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
+    // ImmutableArraySequence<int>* C = A->Map(square);
+    // ImmutableArraySequence<int>* D = A->Where(If);
+    // std::cout << "Map: " << toString(C) << "\n";
+    // std::cout << "Where: " << toString(D) << "\n";
+    // std::cout << "Reduce: " << A->Reduce(foo, 4) << "\n";
+
+    // std::vector<std::string> temp(5, "1234");
+    // MutableArraySequence<std::string>* result = new MutableArraySequence<std::string>();
+    // result = result->From(temp);
+    // std::cout << "From: " << toString(result) << "\n";
+    // MutableArraySequence<int>* B = result->Map<int>([](std::string s){
+    //     return std::atoi(s.c_str());
+    // });
+    // std::cout << "Map из типа в тип: " << toString(B) << '\n';
+
+    // int aaa[] = {123, 345, 678};
+    // MutableArraySequence<int>* F = new MutableArraySequence<int>(aaa, 3);
+    // MutableArraySequence<int>* answer = F->FlatMap<int>([](int n) {
+    //     DynamicArray<int>* tmp = new DynamicArray<int>();
+    //     n = abs(n);
+    //     while (n > 0) {
+    //         tmp->Append(n % 10);
+    //         n /= 10;
+    //     }
+    //     return tmp;
+    // });
+    // std::cout << "FlatMap: "<< toString(answer) << "\n";
+
+    // int values[] = {1, 2, 3, 4, 5};
+    // int f[] = {0, 0, 0, 0, 0};
+    // int ff[] = {-1, -2, -3, -4, -5};
+    // MutableArraySequence<int>* I = new MutableArraySequence<int>(values, 5);
+    // MutableArraySequence<int>* J = new MutableArraySequence<int>(f, 5);
+    // MutableArraySequence<int>* K = new MutableArraySequence<int>(ff, 5);
+    // MutableArraySequence<std::tuple<int, int, int>>* ans = I->Zip(I, J, K);
+    // std::cout << "Zip: [";
+    // for (int i = 0; i < ans->GetSize(); i++) {
+    //     std::tuple<int, int, int> temp = ans->Get(i);
+    //     std::cout << "("
+    //     << std::get<0>(temp) << ", "
+    //     << std::get<1>(temp)  << ", "
+    //     << std::get<2>(temp) <<  ") ";
+    // }
+
+    // std::tuple<MutableArraySequence<int>, MutableArraySequence<int>, MutableArraySequence<int>>* res = ans->UnZip<int, int, int>();
+    
+    // auto& first = std::get<0>(*res);
+    // auto& second = std::get<1>(*res);
+    // auto& third = std::get<2>(*res);
+
+    // std::cout << "]\nUnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n";
+
+    // delete I;
+    // delete J;
+    // delete K;
+    // delete ans;
+    // delete res;
+    // delete answer;
+    // delete F;
+    // delete result;
+    // delete B;
+    // delete A;
+    // delete C;
+    // delete D;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    // MUTABLE ARRAY SEQUENCE
+
+    // int items[] = {1, 2, 3};
+    // MutableArraySequence<int>* A = new MutableArraySequence<int>(items, 3);
+    // std::cout << "A: " << toString(A) << "\n";
+    // A->Set(1, 100);
+    // std::cout << "Set: " << toString(A) << "\n";
+    // A->Append(999);
+    // std::cout << "Append: " << toString(A) << "\n";
+    // A->Prepend(999);
+    // std::cout << "Prepend: " << toString(A) << "\n";
+    // A->InsertAt(1, 100);
+    // std::cout << "InsertAt: " << toString(A) << "\n";
+    // MutableArraySequence<int>* con = A->Concat(A);
+    // std::cout << "Concat: " << toString(con) << "\n";
+    // MutableArraySequence<int>* sub = con->GetSubSequence(1, 5);
+    // std::cout << "SubSequence: " << toString(sub) << "\n"; 
+    // A->Resize(1);
+    // std::cout << "Resize: " << toString(A) << "\n";
+
+    // delete A;
+    // delete con;
+    // delete sub;
+
+    // int items[] = {1, 2, 3};
+    // MutableArraySequence<int>* A = new MutableArraySequence<int>(items, 3);
+    // std::cout << "A: " << toString(A) << "\n";
+    // std::function<int(int)> square = [](int x) ->int {return x * x;};
+    // std::function<bool(int)> If = [](int x) ->int {return x > 0;};
+    // std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
+    // MutableArraySequence<int>* C = A->Map(square);
+    // MutableArraySequence<int>* D = A->Where(If);
+    // std::cout << "Map: " << toString(C) << "\n";
+    // std::cout << "Where: " << toString(D) << "\n";
+    // std::cout << "Reduce: " << A->Reduce(foo, A, 4) << "\n";
+
+    // std::vector<std::string> temp(5, "1234");
+    // MutableArraySequence<std::string>* result = new MutableArraySequence<std::string>();
+    // result = result->From(temp);
+    // std::cout << "From: " << toString(result) << "\n";
+    // MutableArraySequence<int>* B = result->Map<int>([](std::string s){
+    //     return std::atoi(s.c_str());
+    // });
+    // std::cout << "Map из типа в тип: " << toString(B) << '\n';
+
+    // int aaa[] = {123, 345, 678};
+    // MutableArraySequence<int>* F = new MutableArraySequence<int>(aaa, 3);
+    // MutableArraySequence<int>* answer = F->FlatMap<int>([](int n) {
+    //     DynamicArray<int>* tmp = new DynamicArray<int>();
+    //     n = abs(n);
+    //     while (n > 0) {
+    //         tmp->Append(n % 10);
+    //         n /= 10;
+    //     }
+    //     return tmp;
+    // });
+    // std::cout << "FlatMap: "<< toString(answer) << "\n";
+
+    // int values[] = {1, 2, 3, 4, 5};
+    // int f[] = {0, 0, 0, 0, 0};
+    // int ff[] = {-1, -2, -3, -4, -5};
+    // MutableArraySequence<int>* I = new MutableArraySequence<int>(values, 5);
+    // MutableArraySequence<int>* J = new MutableArraySequence<int>(f, 5);
+    // MutableArraySequence<int>* K = new MutableArraySequence<int>(ff, 5);
+    // MutableArraySequence<std::tuple<int, int, int>>* ans = I->Zip(I, J, K);
+    // std::cout << "Zip: [";
+    // for (int i = 0; i < ans->GetSize(); i++) {
+    //     std::tuple<int, int, int> temp = ans->Get(i);
+    //     std::cout << "("
+    //     << std::get<0>(temp) << ", "
+    //     << std::get<1>(temp)  << ", "
+    //     << std::get<2>(temp) <<  ") ";
+    // }
+
+    // std::tuple<MutableArraySequence<int>, MutableArraySequence<int>, MutableArraySequence<int>>* res = ans->UnZip<int, int, int>();
+    
+    // auto& first = std::get<0>(*res);
+    // auto& second = std::get<1>(*res);
+    // auto& third = std::get<2>(*res);
+
+    // std::cout << "]\nUnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n";
+
+    // delete I;
+    // delete J;
+    // delete K;
+    // delete ans;
+    // delete res;
+    // delete answer;
+    // delete F;
+    // delete result;
+    // delete B;
+    // delete A;
+    // delete C;
+    // delete D;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+
+    // MUTABLE LIST SEQUENCE
+
+    // int items[] = {1, 2, 3};
+    // MutableListSequence<int>* A = new MutableListSequence<int>(items, 3);
+    // std::cout << "A: " << toString(A) << "\n";
+    // A->Set(1, 100);
+    // std::cout << "Set: " << toString(A) << "\n";
+    // A->Append(999);
+    // std::cout << "Append: " << toString(A) << "\n";
+    // A->Prepend(999);
+    // std::cout << "Prepend: " << toString(A) << "\n";
+    // A->InsertAt(1, 100);
+    // std::cout << "InsertAt: " << toString(A) << "\n";
+    // MutableListSequence<int>* con = A->Concat(A);
+    // std::cout << "Concat: " << toString(con) << "\n";
+    // MutableListSequence<int>* sub = con->GetSubSequence(1, 5);
+    // std::cout << "SubSequence: " << toString(sub) << "\n"; 
+    // A->Resize(1);
+    // std::cout << "Resize: " << toString(A) << "\n";
+
+    // delete A;
+    // delete con;
+    // delete sub;
+
+    // int items[] = {1, 2, 3};
+    // MutableListSequence<int>* A = new MutableListSequence<int>(items, 3);
+    // std::cout << "A: " << toString(A) << "\n";
+    // std::function<int(int)> square = [](int x) ->int {return x * x;};
+    // std::function<bool(int)> If = [](int x) ->int {return x > 0;};
+    // std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
+    // MutableListSequence<int>* C = A->Map(square);
+    // MutableListSequence<int>* D = A->Where(If);
+    // std::cout << "Map: " << toString(C) << "\n";
+    // std::cout << "Where: " << toString(D) << "\n";
+    // std::cout << "Reduce: " << A->Reduce(foo, A, 4) << "\n";
+
+    // std::vector<std::string> temp(5, "1234");
+    // MutableListSequence<std::string>* result = new MutableListSequence<std::string>();
+    // result = result->From(temp);
+    // std::cout << "From: " << toString(result) << "\n";
+    // MutableListSequence<int>* B = result->Map<int>([](std::string s){
+    //     return std::atoi(s.c_str());
+    // });
+    // std::cout << "Map из типа в тип: " << toString(B) << '\n';
+
+    // int aaa[] = {123, 345, 678};
+    // MutableListSequence<int>* F = new MutableListSequence<int>(aaa, 3);
+    // MutableListSequence<int>* answer = F->FlatMap<int>([](int n) {
+    //     LinkedList<int>* tmp = new LinkedList<int>();
+    //     n = abs(n);
+    //     while (n > 0) {
+    //         tmp->Append(n % 10);
+    //         n /= 10;
+    //     }
+    //     return tmp;
+    // });
+    // std::cout << "FlatMap: "<< toString(answer) << "\n";
 
     // int values[] = {1, 2, 3, 4, 5};
     // int f[] = {0, 0, 0, 0, 0};
@@ -60,24 +307,46 @@ int main() {
     // auto& second = std::get<1>(*res);
     // auto& third = std::get<2>(*res);
 
-    // std::cout << "]\nUnZip: (" << first.toString() << " " << second.toString() << " " << third.toString() << ")\n";
+    // std::cout << "]\nUnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n";
 
     // delete I;
     // delete J;
     // delete K;
     // delete ans;
     // delete res;
-    delete answer;
-    delete F;
-    delete result;
-    delete B;
-    delete A;
-    delete C;
-    delete D;
-
+    // delete answer;
+    // delete F;
+    // delete result;
+    // delete B;
+    // delete A;
+    // delete C;
+    // delete D;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
     
     // DYNAMIC ARRAY TESTS
+
+    // int items[] = {1, 2, 3};
+    // DynamicArray<int>* A = new DynamicArray<int>(items, 3);
+    // std::cout << "A: " << A->toString() << "\n";
+    // A->Set(1, 100);
+    // std::cout << "Set: " << A->toString() << "\n";
+    // A->Append(999);
+    // std::cout << "Append: " << A->toString() << "\n";
+    // A->Prepend(999);
+    // std::cout << "Prepend: " << A->toString() << "\n";
+    // A->InsertAt(1, 100);
+    // std::cout << "InsertAt: " << A->toString() << "\n";
+    // DynamicArray<int>* con = A->Concat(A);
+    // std::cout << "Concat: " << con->toString() << "\n";
+    // DynamicArray<int>* sub = con->GetSubDynamicArray(1, 5);
+    // std::cout << "SubSequence: " << sub->toString() << "\n"; 
+    // A->Resize(1);
+    // std::cout << "Resize: " << A->toString() << "\n";
+
+    // delete A;
+    // delete con;
+    // delete sub;
 
     // int items[] = {1, 2, 3};
     // DynamicArray<int>* A = new DynamicArray<int>(items, 3);
@@ -151,6 +420,29 @@ int main() {
     // delete D;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // LINKED LIST TESTS
+
+    // int items[] = {1, 2, 3};
+    // LinkedList<int>* A = new LinkedList<int>(items, 3);
+    // std::cout << "A: " << A->toString() << "\n";
+    // A->Set(1, 100);
+    // std::cout << "Set: " << A->toString() << "\n";
+    // A->Append(999);
+    // std::cout << "Append: " << A->toString() << "\n";
+    // A->Prepend(999);
+    // std::cout << "Prepend: " << A->toString() << "\n";
+    // A->InsertAt(1, 100);
+    // std::cout << "InsertAt: " << A->toString() << "\n";
+    // LinkedList<int>* con = A->Concat(A);
+    // std::cout << "Concat: " << con->toString() << "\n";
+    // LinkedList<int>* sub = con->GetSubList(1, 5);
+    // std::cout << "SubSequence: " << sub->toString() << "\n"; 
+    // A->Resize(1);
+    // std::cout << "Resize: " << A->toString() << "\n";
+
+    // delete A;
+    // delete con;
+    // delete sub;
 
     // int items[] = {1, 2, 3};
     // LinkedList<int>* A = new LinkedList<int>(items, 3);
@@ -189,8 +481,8 @@ int main() {
     // LinkedList<double> temp3(temp, 3);
     // LinkedList<double> items[] = {temp1, temp2, temp3};
     // LinkedList<LinkedList<double>>* B = new LinkedList<LinkedList<double>>(items, 3);
-    // LinkedList<LinkedList<double>> pizda[] = {*B, *B, *B};
-    // LinkedList<LinkedList<LinkedList<double>>>* A = new LinkedList<LinkedList<LinkedList<double>>>(pizda, 3);
+    // LinkedList<LinkedList<double>> C[] = {*B, *B, *B};
+    // LinkedList<LinkedList<LinkedList<double>>>* A = new LinkedList<LinkedList<LinkedList<double>>>(C, 3);
     // for (int i = 0; i < A->GetSize(); i++) {
     //     for (int j = 0; j < B->GetSize(); j++) {
     //         std::cout << (((*A)[i])[j]).toString() << "\n";

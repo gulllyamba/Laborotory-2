@@ -7,6 +7,8 @@
 template <typename T>
 class ImmutableArraySequence : virtual public ArraySequence<T>, virtual public ImmutableSequence<T> {
     public:
+        using value_type = T;
+
         ImmutableArraySequence(const T* items, int size) : ArraySequence<T>(items, size) {}
         ImmutableArraySequence() : ImmutableArraySequence<T>(nullptr, 0) {}
         ImmutableArraySequence(int size) : ImmutableArraySequence<T>(nullptr, size) {}
@@ -26,45 +28,96 @@ class ImmutableArraySequence : virtual public ArraySequence<T>, virtual public I
             return this->array->GetSize();
         }
 
-        std::string toString() const override {
-            return this->array->toString();
-        }
+        // std::string toString() const override {
+        //     return this->array->toString();
+        // }
 
         ImmutableArraySequence<T>* Set(int index, const T& value) const override {
-            return (const_cast<ImmutableArraySequence<T>*>(this))->Instance()->SetInternal(index, value);
+            return dynamic_cast<ImmutableArraySequence<T>*>((const_cast<ImmutableArraySequence<T>*>(this))->Instance()->SetInternal(index, value));
         }
         
         ImmutableArraySequence<T>* Append(const T& value) const override {
-            return (const_cast<ImmutableArraySequence<T>*>(this))->Instance()->AppendInternal(value);
+            return dynamic_cast<ImmutableArraySequence<T>*>((const_cast<ImmutableArraySequence<T>*>(this))->Instance()->AppendInternal(value));
         }
         
         ImmutableArraySequence<T>* Prepend(const T& value) const override {
-            return (const_cast<ImmutableArraySequence<T>*>(this))->Instance()->PrependInternal(value);
+            return dynamic_cast<ImmutableArraySequence<T>*>((const_cast<ImmutableArraySequence<T>*>(this))->Instance()->PrependInternal(value));
         }
         
         ImmutableArraySequence<T>* InsertAt(int index, const T& value) const override {
-            return (const_cast<ImmutableArraySequence<T>*>(this))->Instance()->InsertAtInternal(index, value);
+            return dynamic_cast<ImmutableArraySequence<T>*>((const_cast<ImmutableArraySequence<T>*>(this))->Instance()->InsertAtInternal(index, value));
         }
         
         ImmutableArraySequence<T>* Resize(int size) const override {
-            return (const_cast<ImmutableArraySequence<T>*>(this))->Instance()->ResizeInternal(size);
+            return dynamic_cast<ImmutableArraySequence<T>*>((const_cast<ImmutableArraySequence<T>*>(this))->Instance()->ResizeInternal(size));
         }
 
         ImmutableArraySequence<T>* GetSubSequence(int startIndex, int endIndex) const override {
             DynamicArray<T>* temp_arr = this->array->GetSubDynamicArray(startIndex, endIndex);
-            ImmutableArraySequence<T>* temp = new ImmutableArraySequence<T>(*temp_arr);
-            delete temp_arr;
+            ImmutableArraySequence<T>* temp = (const_cast<ImmutableArraySequence<T>*>(this))->Instance();
+            temp->array = temp_arr;
             return temp;
-            return (const_cast<ImmutableArraySequence<T>*>(this))->Instance()->array->
         }
         ImmutableArraySequence<T>* Concat(ImmutableSequence <T>* other) const override {
-            // ImmutableArraySequence<T>* temp = new ImmutableArraySequence<T>(*this);
-            return dynamic_cast<ImmutableArraySequence<T>*>((const_cast<ImmutableArraySequence<T>*>(this))->Instance()->ConcatInternal(dynamic_cast<ImmutableArraySequence<T>*>(other)));
+            DynamicArray<T>* temp_arr = this->array->Concat(dynamic_cast<ImmutableArraySequence<T>*>(other)->array);
+            ImmutableArraySequence<T>* temp = (const_cast<ImmutableArraySequence<T>*>(this))->Instance();
+            temp->array = temp_arr;
+            return temp;
+        }
+
+        template <typename Container>
+        ImmutableArraySequence<T>* From(const Container& container) {
+            DynamicArray<T>* temp_arr = this->array->From(container);
+            ImmutableArraySequence<T>* temp = (const_cast<ImmutableArraySequence<T>*>(this))->Instance();
+            temp->array = temp_arr;
+            return temp;
+        }
+        template <typename U>
+        ImmutableArraySequence<U>* Map(std::function<U(T)> f) const {
+            DynamicArray<T>* temp_arr = this->array->Map(f);
+            ImmutableArraySequence<T>* temp = (const_cast<ImmutableArraySequence<T>*>(this))->Instance();
+            temp->array = temp_arr;
+            return temp;
+        }
+        template <typename U>
+        ImmutableArraySequence<T>* FlatMap(std::function<DynamicArray<T>*(U)> f) const {
+            DynamicArray<T>* temp_arr = this->array->FlatMap(f);
+            ImmutableArraySequence<T>* temp = (const_cast<ImmutableArraySequence<T>*>(this))->Instance();
+            temp->array = temp_arr;
+            return temp;
+        }
+        ImmutableArraySequence<T>* Where(std::function<bool(T)> f) const {
+            DynamicArray<T>* temp_arr = this->array->Where(f);
+            ImmutableArraySequence<T>* temp = (const_cast<ImmutableArraySequence<T>*>(this))->Instance();
+            temp->array = temp_arr;
+            return temp;
+        }
+        T Reduce(std::function<T(T, T)> f, const T& c) const {
+            return (const_cast<ImmutableArraySequence<T>*>(this))->array->Reduce(f, c);
+        }
+        template <typename... Sequences>
+        ImmutableArraySequence<std::tuple<T, typename Sequences::value_type...>>* Zip(ImmutableSequence<T>* first, Sequences*... sequences) const {
+            ImmutableArraySequence<std::tuple<T, typename Sequences::value_type...>>* result = new ImmutableArraySequence<std::tuple<T, typename Sequences::value_type...>>(*((const_cast<ImmutableArraySequence<T>*>(this))->array->Zip(dynamic_cast<ImmutableArraySequence<T>*>(first)->array, (dynamic_cast<ImmutableArraySequence<T>*>(sequences)->array)...)));
+            return result;
+        }
+        template <typename... Tuples>
+        std::tuple<ImmutableArraySequence<Tuples>...>* UnZip() const {
+            std::tuple<ImmutableArraySequence<Tuples>...>* result = new std::tuple<ImmutableArraySequence<Tuples>...>();
+            for (auto it = (const_cast<ImmutableArraySequence<T>*>(this))->array->begin(); it != (const_cast<ImmutableArraySequence<T>*>(this))->array->end(); ++it) {
+                auto unzip = [&]<size_t... Is>(std::index_sequence<Is...>) {
+                    ((std::get<Is>(*result).AppendForUnZip(std::get<Is>(*it))), ...);
+                };
+                unzip(std::index_sequence_for<Tuples...>{});
+            }
+            return result;
         }
 
     private:
         ImmutableArraySequence<T>* Instance() override {
             return new ImmutableArraySequence<T>(*this);
+        }
+        ImmutableArraySequence<T>* AppendForUnZip(const T& value) {
+            return dynamic_cast<ImmutableArraySequence<T>*>(this->AppendInternal(value));
         }
 };
 
