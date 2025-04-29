@@ -1,33 +1,165 @@
 #include "Array/MutableArraySequence.hpp"
 #include "Array/ImmutableArraySequence.hpp"
 #include "List/MutableListSequence.hpp"
+#include "AdaptiveSequence.hpp"
 #include <cmath>
 template <typename T>
 std::string toString(MutableListSequence<T>* list) {
-    return list->list->toString();
+    return list->GetList()->toString();
 }
 template <typename T>
 std::string toString(const MutableListSequence<T>& list) {
-    return list.list->toString();
+    return list.GetList()->toString();
 }
 template <typename T>
 std::string toString(MutableArraySequence<T>* array) {
-    return array->array->toString();
+    return array->GetArray()->toString();
 }
 template <typename T>
 std::string toString(const MutableArraySequence<T>& array) {
-    return array.array->toString();
+    return array.GetArray()->toString();
 }
 template <typename T>
 std::string toString(ImmutableArraySequence<T>* array) {
-    return array->array->toString();
+    return array->GetArray()->toString();
 }
 template <typename T>
 std::string toString(const ImmutableArraySequence<T>& array) {
-    return array.array->toString();
+    return array.GetArray()->toString();
 }
 
 int main() {
+    // ADAPTIVE SEQUENCE
+
+    // int items[] = {1, 2, 3};
+    // AdaptiveSequence<int>* A = new AdaptiveSequence<int>(items, 3);
+    // std::cout << "A: " << A->toString(0) << "\t" << A->toString(1) << "\n";
+    // std::function<int(int)> square = [](int x) ->int {return x * x;};
+    // std::function<bool(int)> If = [](int x) ->int {return x > 0;};
+    // std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
+    // AdaptiveSequence<int>* C = A->Map(square);
+    // AdaptiveSequence<int>* D = A->Where(If);
+    // std::cout << "Map: " << C->toString(0) << "\t" << C->toString(1) << "\n";
+    // std::cout << "Where: " << D->toString(0) << "\t" << D->toString(1) << "\n";
+    // std::cout << "Reduce: " << A->Reduce(foo, 4) << "\n";
+
+    // std::vector<std::string> temp(5, "1234");
+    // AdaptiveSequence<std::string>* result = new AdaptiveSequence<std::string>();
+    // result->From(temp);
+    // std::cout << "From: " << result->toString(0) << "\t" << result->toString(1) << "\n";
+    // AdaptiveSequence<int>* B = result->Map<int>([](std::string s){
+    //     return std::atoi(s.c_str());
+    // });
+    // std::cout << "Map из типа в тип: " << B->toString(0) << "\t" << B->toString(1) << '\n';
+
+    // int aaa[] = {123, 345, 678};
+    // AdaptiveSequence<int>* F = new AdaptiveSequence<int>(aaa, 3);
+    // std::cout << "F: "<< F->toString(0) << "\t" << F->toString(1) << "\n";
+    // AdaptiveSequence<int>* answer = F->FlatMap<int>([](int n) {
+    //     AdaptiveSequence<int>* tmp = new AdaptiveSequence<int>();
+    //     n = abs(n);
+    //     while (n > 0) {
+    //         tmp->Append(n % 10);
+    //         n /= 10;
+    //     }
+    //     return tmp;
+    // });
+    // std::cout << "FlatMap: "<< answer->toString(0) << "\t" << answer->toString(1) << "\n";
+
+    // int values[] = {1, 2, 3, 4, 5};
+    // int f[] = {0, 0, 0, 0, 0};
+    // int ff[] = {-1, -2, -3, -4, -5};
+    // AdaptiveSequence<int>* I = new AdaptiveSequence<int>(values, 5);
+    // AdaptiveSequence<int>* J = new AdaptiveSequence<int>(f, 5);
+    // AdaptiveSequence<int>* K = new AdaptiveSequence<int>(ff, 5);
+    // AdaptiveSequence<std::tuple<int, int, int>>* ans = I->Zip(I, J, K);
+    // std::cout << "Zip: [";
+    // for (int i = 0; i < ans->GetSize(); i++) {
+    //     std::tuple<int, int, int> temp = ans->Get(i);
+    //     std::cout << "("
+    //     << std::get<0>(temp) << ", "
+    //     << std::get<1>(temp)  << ", "
+    //     << std::get<2>(temp) <<  ") ";
+    // }
+
+    // std::tuple<AdaptiveSequence<int>, AdaptiveSequence<int>, AdaptiveSequence<int>>* res = ans->UnZip<int, int, int>();
+    
+    // auto& first = std::get<0>(*res);
+    // auto& second = std::get<1>(*res);
+    // auto& third = std::get<2>(*res);
+
+    // std::cout << "]\nUnZip: (" << first.toString(0) << ", " << second.toString(0) << ", " << third.toString(0) << ")\n";
+
+    // delete I;
+    // delete J;
+    // delete K;
+    // delete ans;
+    // delete res;
+    // delete answer;
+    // delete F;
+    // delete result;
+    // delete B;
+    // delete A;
+    // delete C;
+    // delete D;
+
+    // int items[] = {1, 2, 3, 4, 5};
+    // AdaptiveSequence<int>* E = new AdaptiveSequence<int>(items, 5);
+    // for (int i = 0; i < E->GetSize(); i++) std::cout << E->Get(i) << " ";
+    // std::cout << "\n";
+
+    // AdaptiveSequence<int>* Sub = E->GetSubSequence(1, 4);
+    // std::cout << Sub->toString(0) << "\t" << Sub->toString(1) << "\n";
+
+    // AdaptiveSequence<int>* Con = E->Concat(Sub);
+    // std::cout << Con->toString(0) << "\t" << Con->toString(1) << "\n";
+    // delete Con;
+    // delete Sub;
+    // delete E;
+
+    // AdaptiveSequence<int>* A = new AdaptiveSequence<int>(items, 5);
+    // std::cout << A->toString(0) << "\n" << A->toString(1) << "\n";
+    // A->Append(99);
+    // std::cout << A->toString(0) << "\n" << A->toString(1) << "\n";
+    // A->Append(99);
+    // std::cout << A->toString(0) << "\n" << A->toString(1) << "\n";
+    // A->Append(99);
+    // std::cout << A->toString(0) << "\n" << A->toString(1) << "\n";
+    // delete A;
+
+    // AdaptiveSequence<int>* B = new AdaptiveSequence<int>(items, 5);
+    // std::cout << B->GetCorrectLeft() << " " << B->GetCorrectRight() << "\n";
+    // std::cout << B->toString(0) << "\n" << B->toString(1) << "\n";
+    // B->Prepend(99);
+    // std::cout << B->GetCorrectLeft() << " " << B->GetCorrectRight() << "\n";
+    // std::cout << B->toString(0) << "\n" << B->toString(1) << "\n";
+    // B->Prepend(99);
+    // std::cout << B->GetCorrectLeft() << " " << B->GetCorrectRight() << "\n";
+    // std::cout << B->toString(0) << "\n" << B->toString(1) << "\n";
+    // B->Prepend(99);
+    // std::cout << B->GetCorrectLeft() << " " << B->GetCorrectRight() << "\n";
+    // std::cout << B->toString(0) << "\n" << B->toString(1) << "\n";
+    // delete B;
+    // AdaptiveSequence<int>* C = new AdaptiveSequence<int>(items, 5);
+    // std::cout << C->toString(0) << "\t" << C->toString(1) << "\n";
+    // for (int i = 0; i < C->GetSize(); i++) {
+    //     C->Set(i, i);
+    // }
+    // std::cout << C->toString(0) << "\t" << C->toString(1) << "\n";
+    // delete C;
+
+    // AdaptiveSequence<int>* D = new AdaptiveSequence<int>(items, 5);
+    // std::cout << D->toString(0) << "\t" << D->toString(1) << "\n";
+    // int size = D->GetSize();
+    // for (int i = 0; i < size; i++) {
+    //     D->InsertAt(i, 9);
+    //     std::cout << D->toString(0) << "\t" << D->toString(1) << "\n";
+    // }
+    // delete D;
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////
     //  IMMUTABLE ARRAY SEQUENCE
 
     // int items[] = {1, 2, 3};

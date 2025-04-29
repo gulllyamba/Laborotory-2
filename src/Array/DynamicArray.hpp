@@ -129,17 +129,17 @@ class DynamicArray {
         DynamicArray(const DynamicArray<T> &other);
         DynamicArray(DynamicArray<T>&& other) noexcept;
 
+        T GetFirst() const;
+        T GetLast() const;
+        T Get(int index) const;
+        int GetSize() const;
+
         void Append(const T& value);
         void Prepend(const T& value);
         void Set(int index, const T& value);
         // void Set(int index, T&& value);
         void InsertAt(int index, const T& value);
         void Resize(int size);
-
-        T GetFirst() const;
-        T GetLast() const;
-        T Get(int index) const;
-        int GetSize() const;
 
         DynamicArray<T>* GetSubDynamicArray(int startIndex, int endIndex) const;
         DynamicArray<T>* Concat(const DynamicArray<T>* other) const;
@@ -194,7 +194,7 @@ class DynamicArray {
         T* Data = nullptr;
         int Size = 0;
 
-        template<typename U>
+        template <typename U>
         friend class DynamicArray;
 };
 
@@ -364,8 +364,11 @@ template <typename T>
 template <typename Container>
 DynamicArray<T>* DynamicArray<T>::From(const Container& container) {
     if (Data) delete [] Data;
-    for (auto it = container.begin(); it != container.end(); ++it) {
-        Append(*it);
+    Size = 0;
+    for (auto it = container.begin(); it != container.end(); ++it) Size++;
+    Data = new T[Size];
+    for (auto it = container.begin(), i = 0; it != container.end(); ++it, i++) {
+        Data[i] = *it;
     }
     return this;
 }
@@ -390,7 +393,7 @@ DynamicArray<T>* DynamicArray<T>::FlatMap(std::function<DynamicArray<T>*(U)> f) 
         for (auto tempIt = temp->begin(); tempIt != temp->end(); ++tempIt) {
             result->Append(*tempIt);
         }
-        delete temp;
+        if (temp) delete temp;
     }
     return result;
 }
@@ -399,7 +402,7 @@ template <typename T>
 DynamicArray<T>* DynamicArray<T>::Where(std::function<bool(T)> f) const {
     DynamicArray<T>* result = new DynamicArray<T>();
     if (!Data || Size <= 0) return result;
-    for (int i = 0; i <Size; i++) {
+    for (int i = 0; i < Size; i++) {
         if (f(Data[i])) {
             result->Append(Data[i]);
         }

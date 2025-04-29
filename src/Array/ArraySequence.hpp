@@ -7,6 +7,7 @@
 template <typename T>
 class ArraySequence : public Sequence<T>{
     protected:
+        DynamicArray<T>* array;
 
         ArraySequence<T>* SetInternal(int index, const T& value) {
             array->Set(index, value);
@@ -55,11 +56,13 @@ class ArraySequence : public Sequence<T>{
             return array->operator[](index);
         }
 
+        DynamicArray<T>* GetArray() const {
+            return array;
+        }
+
         virtual ~ArraySequence() {
             if (array) delete array;
         }
-
-        DynamicArray<T>* array;
 };
 
 #endif // ARRAYSEQUENCE_HPP
