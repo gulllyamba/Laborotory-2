@@ -34,12 +34,15 @@ int main() {
     // int items[] = {1, 2, 3};
     // AdaptiveSequence<int>* A = new AdaptiveSequence<int>(items, 3);
     // std::cout << "A: " << A->toString(0) << "\t" << A->toString(1) << "\n";
+    // for (int i = 0; i < A->GetSize(); i++) {
+    //     std::cout << (*A)[i] << " ";
+    // }
     // std::function<int(int)> square = [](int x) ->int {return x * x;};
     // std::function<bool(int)> If = [](int x) ->int {return x > 0;};
     // std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
     // AdaptiveSequence<int>* C = A->Map(square);
     // AdaptiveSequence<int>* D = A->Where(If);
-    // std::cout << "Map: " << C->toString(0) << "\t" << C->toString(1) << "\n";
+    // std::cout << "\nMap: " << C->toString(0) << "\t" << C->toString(1) << "\n";
     // std::cout << "Where: " << D->toString(0) << "\t" << D->toString(1) << "\n";
     // std::cout << "Reduce: " << A->Reduce(foo, 4) << "\n";
 

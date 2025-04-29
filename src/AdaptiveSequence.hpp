@@ -164,6 +164,40 @@ class AdaptiveSequence {
             other.correctLeft = 0;
             other.correctRight = 0;
         }
+
+        T& operator[](int index) {
+            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
+            return Data[correctLeft + index];
+        }
+        const T& operator[](int index) const {
+            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
+            return Data[correctLeft + index];
+        }
+        AdaptiveSequence& operator=(const AdaptiveSequence<T>& other) {
+            if (this == &other) return *this;
+            if (Data) delete [] Data;
+            Size = other.Size;
+            Data = new T[Size * 2]{};
+            correctLeft = other.correctLeft;
+            correctRight = other.correctRight;
+            for (int i = 0; i < Size; i++) {
+                Data[correctLeft + i] = other.Data[other.correctLeft + i];
+            }
+            return *this;
+        }
+        AdaptiveSequence& operator=(AdaptiveSequence<T>&& other) noexcept {
+            if (this == &other) return *this;
+            if (Data) delete [] Data;
+            Data = other.Data;
+            Size = other.Size;
+            correctLeft = other.correctLeft;
+            correctRight = other.correctRight;
+            other.Data = nullptr;
+            other.Size = 0;
+            other.correctLeft = 0;
+            other.correctRight = 0;
+            return *this;
+        }
         
         int GetCorrectLeft() const {
             return correctLeft;
