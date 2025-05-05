@@ -29,6 +29,9 @@ std::string toString(const ImmutableArraySequence<T>& array) {
 }
 
 int main() {
+    // ARRAY SEQUENCE 
+
+    ////////////////////////////////////////////////////////////////////////////
     // ADAPTIVE SEQUENCE
 
     // int items[] = {1, 2, 3};
@@ -461,48 +464,48 @@ int main() {
     
     // DYNAMIC ARRAY TESTS
 
-    // int items[] = {1, 2, 3};
-    // DynamicArray<int>* A = new DynamicArray<int>(items, 3);
-    // std::cout << "A: " << A->toString() << "\n";
+    // int iii[] = {1, 2, 3};
+    // DynamicArray<int>* A = new DynamicArray<int>(iii, 3);
+    // std::cout << "A: " << A->toString() << "\t" << A->GetCapacity() << "\n";
     // A->Set(1, 100);
-    // std::cout << "Set: " << A->toString() << "\n";
+    // std::cout << "Set: " << A->toString() << "\t" << A->GetCapacity() << "\n";
     // A->Append(999);
-    // std::cout << "Append: " << A->toString() << "\n";
+    // std::cout << "Append: " << A->toString() << "\t" << A->GetCapacity() << "\n";
     // A->Prepend(999);
-    // std::cout << "Prepend: " << A->toString() << "\n";
+    // std::cout << "Prepend: " << A->toString() << "\t" << A->GetCapacity() << "\n";
     // A->InsertAt(1, 100);
-    // std::cout << "InsertAt: " << A->toString() << "\n";
+    // std::cout << "InsertAt: " << A->toString() << "\t" << A->GetCapacity() << "\n";
     // DynamicArray<int>* con = A->Concat(A);
-    // std::cout << "Concat: " << con->toString() << "\n";
+    // std::cout << "Concat: " << con->toString() << "\t" << con->GetCapacity() << "\n";
     // DynamicArray<int>* sub = con->GetSubDynamicArray(1, 5);
-    // std::cout << "SubSequence: " << sub->toString() << "\n"; 
+    // std::cout << "SubSequence: " << sub->toString() << "\t" << sub->GetCapacity() << "\n"; 
     // A->Resize(1);
-    // std::cout << "Resize: " << A->toString() << "\n";
+    // std::cout << "Resize: " << A->toString() << "\t" << A->GetCapacity() << "\n";
 
     // delete A;
     // delete con;
     // delete sub;
 
     // int items[] = {1, 2, 3};
-    // DynamicArray<int>* A = new DynamicArray<int>(items, 3);
-    // std::cout << "A: " <<  A->toString() << "\n";
+    // DynamicArray<int>* H = new DynamicArray<int>(items, 3);
+    // std::cout << "H: " <<  H->toString() << "\t" << H->GetCapacity() << "\n";
     // std::function<int(int)> square = [](int x) ->int {return x * x;};
     // std::function<bool(int)> If = [](int x) ->int {return x > 0;};
     // std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
-    // DynamicArray<int>* C = A->Map(square);
-    // DynamicArray<int>* D = A->Where(If);
-    // std::cout << "Map: " << C->toString() << "\n";
-    // std::cout << "Where: " << D->toString() << "\n";
-    // std::cout << "Reduce: " << A->Reduce(foo, A, 4) << "\n";
+    // DynamicArray<int>* C = H->Map(square);
+    // DynamicArray<int>* D = H->Where(If);
+    // std::cout << "Map: " << C->toString() << "\t" << C->GetCapacity() << "\n";
+    // std::cout << "Where: " << D->toString() << "\t" << D->GetCapacity() << "\n";
+    // std::cout << "Reduce: " << H->Reduce(foo, 4) << "\n";
 
     // std::vector<std::string> temp(5, "1234");
     // DynamicArray<std::string>* result = new DynamicArray<std::string>();
-    // result = result->From(temp);
-    // std::cout << "From: " << result->toString() << "\n";
+    // result->From(temp);
+    // std::cout << "From: " << result->toString() << "\t" << result->GetCapacity() << "\n";
     // DynamicArray<int>* B = result->Map<int>([](std::string s){
     //     return std::atoi(s.c_str());
     // });
-    // std::cout << "Map из типа в тип: " << B->toString() << '\n';
+    // std::cout << "Map из типа в тип: " << B->toString() << "\t" << B->GetCapacity() << '\n';
 
     // int aaa[] = {123, 345, 678};
     // DynamicArray<int>* F = new DynamicArray<int>(aaa, 3);
@@ -515,7 +518,7 @@ int main() {
     //     }
     //     return tmp;
     // });
-    // std::cout << "FlatMap: " << answer->toString() << "\n";
+    // std::cout << "FlatMap: " << answer->toString() << "\t" << answer->GetCapacity() << "\n";
 
     // int values[] = {1, 2, 3, 4, 5};
     // int f[] = {0, 0, 0, 0, 0};
@@ -523,7 +526,7 @@ int main() {
     // DynamicArray<int>* I = new DynamicArray<int>(values, 5);
     // DynamicArray<int>* J = new DynamicArray<int>(f, 5);
     // DynamicArray<int>* K = new DynamicArray<int>(ff, 5);
-    // DynamicArray<std::tuple<int, int, int>>* ans = I->Zip(*I, *J, *K);
+    // DynamicArray<std::tuple<int, int, int>>* ans = I->Zip(I, J, K);
     // std::cout << "Zip: [";
     // for (int i = 0; i < ans->GetSize(); i++) {
     //     std::tuple<int, int, int> temp = ans->Get(i);
@@ -539,7 +542,7 @@ int main() {
     // auto& second = std::get<1>(*res);
     // auto& third = std::get<2>(*res);
 
-    // std::cout << "]\nUnZip: (" << first.toString() << " " << second.toString() << " " << third.toString() << ")\n";
+    // std::cout << "]" << "\t" << ans->GetCapacity() << "\nUnZip: (" << first.toString() << " " << second.toString() << " " << third.toString() << ")\n";
 
     // delete I;
     // delete J;
@@ -550,9 +553,9 @@ int main() {
     // delete F;
     // delete result;
     // delete B;
-    // delete A;
     // delete C;
     // delete D;
+    // delete H;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // LINKED LIST TESTS

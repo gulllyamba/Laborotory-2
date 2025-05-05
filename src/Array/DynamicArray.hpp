@@ -133,7 +133,9 @@ class DynamicArray {
         T GetLast() const;
         T Get(int index) const;
         int GetSize() const;
+        int GetCapacity() const;
 
+        void Reserve(int newCapacity);
         void Append(const T& value);
         void Prepend(const T& value);
         void Set(int index, const T& value);
@@ -155,22 +157,27 @@ class DynamicArray {
             return Data[index];
         }
         DynamicArray& operator=(const DynamicArray<T>& other) {
-            if (this == &other) return *this;
-            if (Data) delete [] Data;
-            Size = other.Size;
-            Data = new T[Size]{};
-            for (int i = 0; i < Size; i++) {
-                Data[i] = other.Data[i];
+            if (this != &other) {
+                if (Data) delete [] Data;
+                Size = other.Size;
+                capacity = other.capacity;
+                Data = new T[capacity]{};
+                for (int i = 0; i < Size; i++) {
+                    Data[i] = other.Data[i];
+                }
             }
             return *this;
         }
         DynamicArray& operator=(DynamicArray<T>&& other) noexcept {
-            if (this == &other) return *this;
-            if (Data) delete [] Data;
-            Data = other.Data;
-            Size = other.Size;
-            other.Data = nullptr;
-            other.Size = 0;
+            if (this != &other) {
+                if (Data) delete [] Data;
+                Data = other.Data;
+                Size = other.Size;
+                capacity = other.capacity;
+                other.Data = nullptr;
+                other.Size = 0;
+                other.capacity = 0;
+            }
             return *this;
         }
 
@@ -193,6 +200,7 @@ class DynamicArray {
     private:
         T* Data = nullptr;
         int Size = 0;
+        int capacity = 1;
 
         template <typename U>
         friend class DynamicArray;
@@ -201,21 +209,13 @@ class DynamicArray {
 template <typename T>
 DynamicArray<T>::DynamicArray(const T* items, int count) {
     if (count < 0) throw std::invalid_argument("Size cannot be negative");
-    else if (count == 0) {
-        Data = nullptr;
-        Size = 0;
-        return;
-    }
-    else if (items) {
-        Size = count;
-        Data = new T[Size]{};
+    Size = count;
+    capacity = (Size == 0) ? 1 : Size * 2;
+    Data = new T[capacity]{};
+    if (items) {
         for (int i = 0; i < Size; i++) {
             Data[i] = items[i];
         }
-    }
-    else {
-        Size = count;
-        Data = new T[Size]{};
     }
 }
 
@@ -232,9 +232,11 @@ template <typename T>
 DynamicArray<T>::DynamicArray(DynamicArray<T>&& other) noexcept {
     Data = other.Data;
     Size = other.Size;
+    capacity = other.capacity;
 
     other.Data = nullptr;
     other.Size = 0;
+    other.capacity = 0;
 }
 
 template <typename T>
@@ -262,18 +264,32 @@ int DynamicArray<T>::GetSize() const {
 }
 
 template <typename T>
+int DynamicArray<T>::GetCapacity() const {
+    return capacity;
+}
+
+template <typename T>
+void DynamicArray<T>::Reserve(int newCapacity) {
+    if (newCapacity <= capacity) return;
+    T* newData = new T[newCapacity];
+    for (int i = 0; i < Size; i++) {
+        newData[i] = Data[i];
+    }
+    delete[] Data;
+    Data = newData;
+    capacity = newCapacity;
+}
+
+template <typename T>
 void DynamicArray<T>::Append(const T& value) {
-    Resize(Size + 1);
-    Data[Size - 1] = value;
+    if (Size >= capacity) Reserve((capacity == 0) ? 1 : capacity * 2);
+    Data[Size] = value;
+    Size++;
 }
 
 template <typename T>
 void DynamicArray<T>::Prepend(const T& value) {
-    Resize(Size + 1);
-    for (int i = Size - 1; i > 0; i--) {
-        Data[i] = Data[i - 1];
-    }
-    Data[0] = value;
+    InsertAt(0, value);
 }
 
 template <typename T>
@@ -281,7 +297,6 @@ void DynamicArray<T>::Set(int index, const T& value) {
     if (!Data || Size <= 0) return;
     if (index >= Size || index < 0) throw std::out_of_range("Index out of range");
     Data[index] = value;
-    return;
 }
 
 // template <typename T>
@@ -295,13 +310,28 @@ void DynamicArray<T>::Set(int index, const T& value) {
 
 template <typename T>
 void DynamicArray<T>::InsertAt(int index, const T& value) {
-    if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-    Resize(Size + 1);
-    for (int i = Size - 1; i > index; i--) {
-        Data[i] = Data[i - 1];
+    if (index < 0 || index > Size) throw std::out_of_range("Index out of range");
+    if (Size >= capacity) {
+        int newCapacity = (capacity == 0) ? 1 : capacity * 2;
+        T* newData = new T[newCapacity]{};
+        for (int i = 0; i < index; i++) {
+            newData[i] = Data[i];
+        }
+        for (int i = Size; i > index; i--) {
+            newData[i] = Data[i - 1];
+        }
+        newData[index] = value;
+        if (Data) delete [] Data;
+        Data = newData;
+        capacity = newCapacity;
     }
-    Data[index] = value;
-    return;
+    else {
+        for (int i = Size; i > index; i--) {
+            Data[i] = Data[i - 1];
+        }
+        Data[index] = value;
+    }
+    Size++;
 }
 
 template <typename T>
@@ -309,19 +339,20 @@ void DynamicArray<T>::Resize(int size) {
     if (size < 0) throw std::invalid_argument("Size cannot be negative");
     else if (size == 0) {
         delete [] Data;
-        Data = nullptr;
+        Size = 0;
+        capacity = 1;
+        Data = new T[capacity]{};
     }
-    else if (Size == size) return;
     else {
-        T* newData = new T[size]{};
+        capacity = size * 2;
+        T* newData = new T[capacity]{};
         for (int i = 0; i < std::min(Size, size); i++) {
             newData[i] = Data[i];
         }
         delete [] Data;
         Data = newData;
+        Size = size;
     }
-    Size = size;
-    return;
 }
 
 template <typename T>
@@ -337,11 +368,16 @@ DynamicArray<T>* DynamicArray<T>::GetSubDynamicArray(int startIndex, int endInde
 
 template <typename T>
 DynamicArray<T>* DynamicArray<T>::Concat(const DynamicArray<T>* other) const {
-    DynamicArray<T>* result = new DynamicArray<T>(*this);
-    if (!other || !other->Data || other->Size <= 0) return result;
-    result->Resize(result->Size + other->Size);
-    for (int i = other->Size; i > 0; i--) {
-        result->Set(result->Size - i, other->Data[other->Size - i]);
+    if (!other || !other->Data || other->Size <= 0) {
+        DynamicArray<T>* result = new DynamicArray<T>(*this);
+        return result;
+    }
+    DynamicArray<T>* result = new DynamicArray<T>(Size + other->Size);
+    for (int i = 0; i < Size; i++) {
+        result->Set(i, Data[i]);
+    }
+    for (int i = 0; i < other->Size; i++) {
+        result->Set(i + Size, other->Data[i]);
     }
     return result;
 }
@@ -366,7 +402,8 @@ DynamicArray<T>* DynamicArray<T>::From(const Container& container) {
     if (Data) delete [] Data;
     Size = 0;
     for (auto it = container.begin(); it != container.end(); ++it) Size++;
-    Data = new T[Size];
+    capacity = Size * 2;
+    Data = new T[capacity];
     for (auto it = container.begin(), i = 0; it != container.end(); ++it, i++) {
         Data[i] = *it;
     }
