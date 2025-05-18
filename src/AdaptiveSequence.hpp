@@ -164,40 +164,6 @@ class AdaptiveSequence {
             other.correctLeft = 0;
             other.correctRight = 0;
         }
-
-        T& operator[](int index) {
-            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-            return Data[correctLeft + index];
-        }
-        const T& operator[](int index) const {
-            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-            return Data[correctLeft + index];
-        }
-        AdaptiveSequence& operator=(const AdaptiveSequence<T>& other) {
-            if (this == &other) return *this;
-            if (Data) delete [] Data;
-            Size = other.Size;
-            Data = new T[Size * 2]{};
-            correctLeft = other.correctLeft;
-            correctRight = other.correctRight;
-            for (int i = 0; i < Size; i++) {
-                Data[correctLeft + i] = other.Data[other.correctLeft + i];
-            }
-            return *this;
-        }
-        AdaptiveSequence& operator=(AdaptiveSequence<T>&& other) noexcept {
-            if (this == &other) return *this;
-            if (Data) delete [] Data;
-            Data = other.Data;
-            Size = other.Size;
-            correctLeft = other.correctLeft;
-            correctRight = other.correctRight;
-            other.Data = nullptr;
-            other.Size = 0;
-            other.correctLeft = 0;
-            other.correctRight = 0;
-            return *this;
-        }
         
         int GetCorrectLeft() const {
             return correctLeft;
@@ -223,68 +189,93 @@ class AdaptiveSequence {
         }
         
         AdaptiveSequence<T>* Append(const T& value) {
-            if (Size == 0) {
-                Resize(Size + 1);
-                Data[correctLeft] = value;
-            }
-            else if (correctLeft == 0 && correctRight == 0) {
-                Resize(Size);
-                Data[correctLeft + Size] = value;
-                Size++;
-                correctRight--;
-            }
-            else if (correctRight == 0) {
+            if (Size == 0) Resize(Size + 1);
+            if (correctRight == 0 && correctLeft == 0) Resize(Size);
+            if (correctLeft >= correctRight) {
                 for (int i = 0; i < Size; i++) {
                     Data[correctLeft + i - 1] = Data[correctLeft + i];
                 }
                 Data[correctLeft + Size - 1] = value;
-                Size++;
                 correctLeft--;
             }
             else {
                 Data[correctLeft + Size] = value;
-                Size++;
                 correctRight--;
             }
+            Size++;
             return this;
         }
-        AdaptiveSequence<T>* Prepend(const T& value) {
-            if (Size == 0) {
-                Resize(Size + 1);
-                Data[correctLeft] = value;
-            }
-            else if (correctLeft == 0 && correctRight == 0) {
-                Resize(Size);
-                Data[correctLeft - 1] = value;
-                Size++;
-                correctLeft--;
-            }
-            else if (correctLeft == 0) {
+        AdaptiveSequence<T>* Append(const T&& value) {
+            if (Size == 0) Resize(Size + 1);
+            if (correctRight == 0 && correctLeft == 0) Resize(Size);
+            if (correctLeft >= correctRight) {
                 for (int i = 0; i < Size; i++) {
-                    Data[correctLeft + Size - i] = Data[correctLeft + Size - i - 1];
+                    Data[correctLeft + i - 1] = Data[correctLeft + i];
                 }
-                Data[correctLeft] = value;
-                Size++;
-                correctRight--;
+                Data[correctLeft + Size - 1] = std::move(value);
+                correctLeft--;
             }
             else {
-                Data[correctLeft - 1] = value;
-                Size++;
-                correctLeft--;
+                Data[correctLeft + Size] = std::move(value);
+                correctRight--;
             }
+            Size++;
             return this;
         }
+
+        AdaptiveSequence<T>* Prepend(const T& value) {
+            if (Size == 0) Resize(Size + 1);
+            if (correctRight == 0 && correctLeft == 0) Resize(Size);
+            if (correctLeft >= correctRight) {
+                Data[correctLeft - 1] = value;
+                correctLeft--;
+            }
+            else {
+                for (int i = Size; i > 0; i--) {
+                    Data[correctLeft + i] = Data[correctLeft + i - 1];
+                }
+                Data[correctLeft] = value;
+                correctRight--;
+            }
+            Size++;
+            return this;
+        }
+        AdaptiveSequence<T>* Prepend(const T&& value) {
+            if (Size == 0) Resize(Size + 1);
+            if (correctRight == 0 && correctLeft == 0) Resize(Size);
+            if (correctLeft >= correctRight) {
+                Data[correctLeft - 1] = std::move(value);
+                correctLeft--;
+            }
+            else {
+                for (int i = Size; i > 0; i--) {
+                    Data[correctLeft + i] = Data[correctLeft + i - 1];
+                }
+                Data[correctLeft] = std::move(value);
+                correctRight--;
+            }
+            Size++;
+            return this;
+        }
+
         AdaptiveSequence<T>* Set(int index, const T& value) {
             if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
             if (index >= Size || index < 0) throw std::out_of_range("Index out of range");
             Data[correctLeft + index] = value;
             return this;
         }
+        AdaptiveSequence<T>* Set(int index, const T&& value) {
+            if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
+            if (index >= Size || index < 0) throw std::out_of_range("Index out of range");
+            Data[correctLeft + index] = std::move(value);
+            return this;
+        }
+
         AdaptiveSequence<T>* InsertAt(int index, const T& value) {
             if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
             if (Size == 0) Resize(Size + 1);
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
-            if (correctLeft > correctRight) {
+            if (correctLeft >= correctRight) {
                 for (int i = 0; i < index; i++) {
                     Data[correctLeft - 1 + i] = Data[correctLeft + i];
                 }
@@ -301,6 +292,28 @@ class AdaptiveSequence {
             Size++;
             return this;
         }
+        AdaptiveSequence<T>* InsertAt(int index, const T&& value) {
+            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
+            if (Size == 0) Resize(Size + 1);
+            if (correctRight == 0 && correctLeft == 0) Resize(Size);
+            if (correctLeft >= correctRight) {
+                for (int i = 0; i < index; i++) {
+                    Data[correctLeft - 1 + i] = Data[correctLeft + i];
+                }
+                Data[correctLeft - 1 + index] = std::move(value);
+                correctLeft--;
+            }
+            else {
+                for (int i = Size; i > index; i--) {
+                    Data[correctLeft + i] = Data[correctLeft + i - 1];
+                }
+                Data[correctLeft + index] = std::move(value);
+                correctRight--;
+            }
+            Size++;
+            return this;
+        }
+
         AdaptiveSequence<T>* Resize(int size) {
             if (size < 0) throw std::invalid_argument("Size cannot be negative");
             else if (size == 0) {
@@ -337,6 +350,28 @@ class AdaptiveSequence {
                 correctLeft = new_correctLeft;
                 correctRight = new_correctRight;
             }
+            return this;
+        }
+
+        AdaptiveSequence<T>* RemoveAt(int index) {
+            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
+            if (Size == 0) throw std::invalid_argument("Array is empty");
+            if (correctLeft == 0 && correctRight == 0) Resize(Size);
+            if (correctRight > correctLeft) {
+                for (int i = index; i > 0; i--) {
+                    Data[correctLeft + i] = Data[correctLeft + i - 1];
+                }
+                Data[correctLeft] = T{};
+                correctLeft++;
+            }
+            else {
+                for (int i = index; i < Size - 1; i++) {
+                    Data[correctLeft + i] = Data[correctLeft + i + 1];
+                }
+                Data[correctLeft + Size - 1] = T{};
+                correctRight++;
+            }
+            Size--;
             return this;
         }
         
@@ -493,6 +528,40 @@ class AdaptiveSequence {
                 unzip(std::index_sequence_for<Tuples...>{});
             }
             return result;
+        }
+
+        T& operator[](int index) {
+            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
+            return Data[correctLeft + index];
+        }
+        const T& operator[](int index) const {
+            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
+            return Data[correctLeft + index];
+        }
+        AdaptiveSequence& operator=(const AdaptiveSequence<T>& other) {
+            if (this == &other) return *this;
+            if (Data) delete [] Data;
+            Size = other.Size;
+            Data = new T[Size * 2]{};
+            correctLeft = other.correctLeft;
+            correctRight = other.correctRight;
+            for (int i = 0; i < Size; i++) {
+                Data[correctLeft + i] = other.Data[other.correctLeft + i];
+            }
+            return *this;
+        }
+        AdaptiveSequence& operator=(AdaptiveSequence<T>&& other) noexcept {
+            if (this == &other) return *this;
+            if (Data) delete [] Data;
+            Data = other.Data;
+            Size = other.Size;
+            correctLeft = other.correctLeft;
+            correctRight = other.correctRight;
+            other.Data = nullptr;
+            other.Size = 0;
+            other.correctLeft = 0;
+            other.correctRight = 0;
+            return *this;
         }
 
         ~AdaptiveSequence() {

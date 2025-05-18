@@ -15,6 +15,13 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
         MutableListSequence(const MutableListSequence<T>& other) : ListSequence<T>(other) {}
         MutableListSequence(const LinkedList<T>& other) : ListSequence<T>(other) {}
 
+        MutableListSequence<T>& operator=(const MutableListSequence<T>& other) {
+            if (this == &other) return *this;
+            if (this->list) delete this->list;
+            this->list = new LinkedList<T>(*other.list);
+            return *this;
+        }
+
         T Get(int index) const override {
             return this->list->Get(index);
         }
@@ -27,10 +34,6 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
         int GetSize() const override {
             return this->list->GetSize();
         }
-
-        // std::string toString() const override {
-        //     return this->list->toString();
-        // }
 
         MutableListSequence<T>* Set(int index, const T& value) override {
             return dynamic_cast<MutableListSequence<T>*>(Instance()->SetInternal(index, value));
@@ -47,46 +50,49 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
         MutableListSequence<T>* Resize(int size) override {
             return dynamic_cast<MutableListSequence<T>*>(Instance()->ResizeInternal(size));
         }
+        MutableListSequence<T>* RemoveAt(int index) override {
+            return dynamic_cast<MutableListSequence<T>*>(Instance()->RemoveAtInternal(index));
+        }
 
         MutableListSequence<T>* GetSubSequence(int startIndex, int endIndex) const override {
             LinkedList<T>* temp_list = (const_cast<MutableListSequence<T>*>(this))->Instance()->list->GetSubList(startIndex, endIndex);
-            MutableListSequence<T>* temp = new MutableListSequence<T>(*temp_list);
+            MutableListSequence<T>* result = new MutableListSequence<T>(*temp_list);
             delete temp_list;
-            return temp;
+            return result;
         }
         MutableListSequence<T>* Concat(MutableSequence<T>* other) const override {
             LinkedList<T>* temp_list = (const_cast<MutableListSequence<T>*>(this))->Instance()->list->Concat(dynamic_cast<MutableListSequence<T>*>(other)->list);
-            MutableListSequence<T>* temp = new MutableListSequence<T>(*temp_list);
+            MutableListSequence<T>* result = new MutableListSequence<T>(*temp_list);
             delete temp_list;
-            return temp;
+            return result;
         }
 
         template <typename Container>
         MutableListSequence<T>* From(const Container& container) {
             LinkedList<T>* temp_list = Instance()->list->From(container);
-            MutableListSequence<T>* temp = new MutableListSequence<T>(*temp_list);
+            MutableListSequence<T>* result = new MutableListSequence<T>(*temp_list);
             delete temp_list;
-            return temp;
+            return result;
         }
         template <typename U>
         MutableListSequence<U>* Map(std::function<U(T)> f) const {
             LinkedList<U>* temp_list = (const_cast<MutableListSequence<T>*>(this))->Instance()->list->Map(f);
-            MutableListSequence<U>* temp = new MutableListSequence<U>(*temp_list);
+            MutableListSequence<U>* result = new MutableListSequence<U>(*temp_list);
             delete temp_list;
-            return temp;
+            return result;
         }
         template <typename U>
         MutableListSequence<T>* FlatMap(std::function<LinkedList<T>*(U)> f) const {
             LinkedList<U>* temp_list = (const_cast<MutableListSequence<T>*>(this))->Instance()->list->FlatMap(f);
-            MutableListSequence<U>* temp = new MutableListSequence<U>(*temp_list);
+            MutableListSequence<U>* result = new MutableListSequence<U>(*temp_list);
             delete temp_list;
-            return temp;
+            return result;
         }
         MutableListSequence<T>* Where(std::function<bool(T)> f) const {
             LinkedList<T>* temp_list = (const_cast<MutableListSequence<T>*>(this))->Instance()->list->Where(f);
-            MutableListSequence<T>* temp = new MutableListSequence<T>(*temp_list);
+            MutableListSequence<T>* result = new MutableListSequence<T>(*temp_list);
             delete temp_list;
-            return temp;
+            return result;
         }
         T Reduce(std::function<T(T, T)> f, const T& c) const {
             return (const_cast<MutableListSequence<T>*>(this))->Instance()->list->Reduce(f, c);
@@ -106,6 +112,10 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
                 unzip(std::index_sequence_for<Tuples...>{});
             }
             return result;
+        }
+
+        virtual ~MutableListSequence() {
+            if (this->list) delete this->list;
         }
 
     private:

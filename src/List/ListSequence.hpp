@@ -34,6 +34,11 @@ class ListSequence : public Sequence<T> {
             return this;
         }
 
+        ListSequence<T>* RemoveAtInternal(int index) {
+            list->RemoveAt(index);
+            return this;
+        }
+
         virtual ListSequence<T>* Instance() = 0;
 
     public:
@@ -58,10 +63,6 @@ class ListSequence : public Sequence<T> {
 
         LinkedList<T>* GetList() const {
             return list;
-        }
-
-        virtual ~ListSequence() {
-            if (list) delete list;
         }
 };
 

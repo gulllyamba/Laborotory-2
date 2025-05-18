@@ -16,7 +16,7 @@ class ListIterator;
 template <typename T>
 class TNode {
     public:
-        TNode(T value) : Value(value), Next_Node(nullptr) {}
+        TNode(T value) : Value(value), Next_Node(nullptr), Prev_Node(nullptr) {}
     private:
         template<typename U>
         friend class LinkedList;
@@ -24,6 +24,7 @@ class TNode {
         friend class ListIterator;
         T Value;
         TNode<T>* Next_Node;
+        TNode<T>* Prev_Node;
 };
 
 template <typename T, bool IsConst>
@@ -38,29 +39,34 @@ class ListIterator {
         ListIterator(TNode<T>* node) : current(node) {}
 
         reference operator*() const {
-            if (!current) {
-                throw std::out_of_range("Iterator out of range");
-            }
+            if (!current) throw std::out_of_range("Iterator out of range");
             return current->Value;
         }
 
         pointer operator->() const {
-            if (!current) {
-                throw std::out_of_range("Iterator out of range");
-            }
+            if (!current) throw std::out_of_range("Iterator out of range");
             return &(current->Value);
         }
 
         ListIterator& operator++() {
-            if (current) {
-                current = current->Next_Node;
-            }
+            if (current) current = current->Next_Node;
             return *this;
         }
 
         ListIterator operator++(int) {
             ListIterator temp = *this;
             ++(*this);
+            return temp;
+        }
+
+        ListIterator& operator--() {
+            if (current) current = current->Prev_Node;
+            return *this;
+        }
+
+        ListIterator operator--(int) {
+            ListIterator temp = *this;
+            --(*this);
             return temp;
         }
 
@@ -111,55 +117,91 @@ class LinkedList {
         LinkedList();
         LinkedList(int size);
         LinkedList(const LinkedList<T>& other);
-
-        void Append(const T& value);
-        void Prepend(const T& value);
-        void Set(int index, const T& value);
-        void InsertAt(int index, const T& value);
-        void Resize(int size);
+        LinkedList(const LinkedList<T>&& other) noexcept;
 
         T GetFirst() const;
         T GetLast() const;
         T Get(int index) const;
         int GetSize() const;
 
+        void Append(const T& value) noexcept;
+        void Append(const T&& value) noexcept;
+        void Prepend(const T& value) noexcept;
+        void Prepend(const T&& value) noexcept;
+        void Set(int index, const T& value);
+        void Set(int index, const T&& value);
+        void InsertAt(int index, const T& value);
+        void InsertAt(int index, const T&& value);
+        void Resize(int size);
+        void RemoveAt(int index);
+
         LinkedList<T>* GetSubList(int startIndex, int endIndex) const;
         LinkedList<T>* Concat(LinkedList<T> *other) const;
 
-        std::string toString() const;
+        std::string toString() const noexcept;
 
         T& operator[](int index) {
             if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-            TNode<T>* Actual_Node = Head;
-            for (int i = 1; i <= index; i++) {
-                Actual_Node = Actual_Node->Next_Node;
+            TNode<T>* Actual_Node = nullptr;
+            if (index >= Size / 2) {
+                Actual_Node = Last;
+                for (int i = Size - 1; i > index; i--) {
+                    Actual_Node = Actual_Node->Prev_Node;
+                }
+            }
+            else {
+                Actual_Node = Head;
+                for (int i = 0; i < index; i++) {
+                    Actual_Node = Actual_Node->Next_Node;
+                }
             }
             return Actual_Node->Value;
         }
         const T& operator[](int index) const {
             if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-            TNode<T>* Actual_Node = Head;
-            for (int i = 1; i <= index; i++) {
-                Actual_Node = Actual_Node->Next_Node;
+            TNode<T>* Actual_Node = nullptr;
+            if (index >= Size / 2) {
+                Actual_Node = Last;
+                for (int i = Size - 1; i > index; i--) {
+                    Actual_Node = Actual_Node->Prev_Node;
+                }
+            }
+            else {
+                Actual_Node = Head;
+                for (int i = 0; i < index; i++) {
+                    Actual_Node = Actual_Node->Next_Node;
+                }
             }
             return Actual_Node->Value;
         }
-        LinkedList& operator=(const LinkedList<T>& other) {
+        LinkedList<T>& operator=(const LinkedList<T>& other) noexcept {
             if (this == &other) return *this;
-            if (!other.Head || !other) {
-                Head = nullptr;
-                Last = nullptr;
+            Delete();
+            if (other.Head && other.Size > 0) {
+                TNode<T>* Actual_Node = other.Head;
+                Head = new TNode<T>(Actual_Node->Value);
+                Last = Head;
+                for (int i = 1; i < other.Size; i++) {
+                    Actual_Node = Actual_Node->Next_Node;
+                    Last->Next_Node = new TNode<T>(Actual_Node->Value);
+                    Last->Next_Node->Prev_Node = Last;
+                    Last = Last->Next_Node;
+                }
+                Size = other.Size;
             }
-            if (Head) Delete();
-            TNode<T>* Actual_Node = other.Head;
-            Head = new TNode<T>(Actual_Node->Value);
-            Last = Head;
-            for (int i = 1; i < other.Size; i++) {
-                Actual_Node = Actual_Node->Next_Node;
-                Last->Next_Node = new TNode<T>(Actual_Node->Value);
-                Last = Last->Next_Node;
+            return *this;
+        }
+        LinkedList<T>& operator=(const LinkedList<T>&& other) noexcept {
+            if (this == &other) return *this;
+            Delete();
+            if (other.Head && other.Size > 0) {
+                Head = other.Head;
+                Last = other.Last;
+                Size = other.Size;
+                other.Head = nullptr;
+                other.Last = nullptr;
+                other.Size = 0;
             }
-            Size = other.Size;
             return *this;
         }
 
@@ -177,9 +219,9 @@ class LinkedList {
         template <typename... Tuples>
         std::tuple<LinkedList<Tuples>...>* UnZip() const;
 
-        void Delete();
+        void Delete() noexcept;
 
-        ~LinkedList();
+        ~LinkedList() noexcept;
 
     private:
         TNode<T>* Head = nullptr;
@@ -205,6 +247,7 @@ LinkedList<T>::LinkedList(const T* items, int count) {
         Last = Head;
         for (int i = 1; i < Size; i++) {
             Last->Next_Node = new TNode<T>(items[i]);
+            Last->Next_Node->Prev_Node = Last;
             Last = Last->Next_Node;
         }
     }
@@ -214,6 +257,7 @@ LinkedList<T>::LinkedList(const T* items, int count) {
         Last = Head;
         for (int i = 1; i < Size; i++) {
             Last->Next_Node = new TNode<T>(T{});
+            Last->Next_Node->Prev_Node = Last;
             Last = Last->Next_Node;
         }
     }
@@ -228,16 +272,24 @@ LinkedList<T>::LinkedList(int size) : LinkedList(nullptr, size) {}
 template <typename T>
 LinkedList<T>::LinkedList(const LinkedList<T>& other) : Head(nullptr), Last(nullptr), Size(0) {
     if (other.Head) {
+        Size = other.Size;
         TNode<T>* Actual_Node = other.Head;
         Head = new TNode<T>(Actual_Node->Value);
         Last = Head;
-        for (int i = 1; i < other.Size; i++) {
+        for (int i = 1; i < Size; i++) {
             Actual_Node = Actual_Node->Next_Node;
             Last->Next_Node = new TNode<T>(Actual_Node->Value);
+            Last->Next_Node->Prev_Node = Last;
             Last = Last->Next_Node;
         }
-        Size = other.Size;
     }
+}
+
+template <typename T>
+LinkedList<T>::LinkedList(const LinkedList<T>&& other) noexcept : Head(other.Head), Last(other.Last), Size(other.Size) {
+    other.Head = nullptr;
+    other.Last = nullptr;
+    other.Size = 0;
 }
 
 template <typename T>
@@ -256,9 +308,18 @@ template <typename T>
 T LinkedList<T>::Get(int index) const {
     if (!Head || !Last || Size <= 0) throw std::out_of_range("List is empty");
     if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-    TNode<T>* Actual_Node = Head;
-    for (int i = 1; i <= index; i++) {
-        Actual_Node = Actual_Node->Next_Node;
+    TNode<T>* Actual_Node = nullptr;
+    if (index >= Size / 2) {
+        Actual_Node = Last;
+        for (int i = Size - 1; i > index; i--) {
+            Actual_Node = Actual_Node->Prev_Node;
+        }
+    }
+    else {
+        Actual_Node = Head;
+        for (int i = 1; i <= index; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+        }
     }
     return Actual_Node->Value;
 }
@@ -269,22 +330,37 @@ int LinkedList<T>::GetSize() const {
 }
 
 template <typename T>
-void LinkedList<T>::Append(const T& value) {
+void LinkedList<T>::Append(const T& value) noexcept {
     TNode<T>* new_Node = new TNode<T>(value);
     if (!Head) {
         Head = new_Node;
         Last = new_Node;
     }
     else {
+        new_Node->Prev_Node = Last;
         Last->Next_Node = new_Node;
         Last = new_Node;
     } 
     Size++;
-    return;
 }
 
 template <typename T>
-void LinkedList<T>::Prepend(const T& value) {
+void LinkedList<T>::Append(const T&& value) noexcept {
+    TNode<T>* new_Node = new TNode<T>(std::move(value));
+    if (!Head) {
+        Head = new_Node;
+        Last = new_Node;
+    }
+    else {
+        new_Node->Prev_Node = Last;
+        Last->Next_Node = new_Node;
+        Last = new_Node;
+    }
+    Size++;
+}
+
+template <typename T>
+void LinkedList<T>::Prepend(const T& value) noexcept {
     TNode<T>* new_Node = new TNode<T>(value);
     if (Head == nullptr) {
         Head = new_Node;
@@ -292,39 +368,127 @@ void LinkedList<T>::Prepend(const T& value) {
     }
     else {
         new_Node->Next_Node = Head;
+        Head->Prev_Node = new_Node;
         Head = new_Node;
     }
     Size++;
-    return;
+}
+
+template <typename T>
+void LinkedList<T>::Prepend(const T&& value) noexcept {
+    TNode<T>* new_Node = new TNode<T>(std::move(value));
+    if (Head == nullptr) {
+        Head = new_Node;
+        Last = new_Node;
+    }
+    else {
+        new_Node->Next_Node = Head;
+        Head->Prev_Node = new_Node;
+        Head = new_Node;
+    }
+    Size++;
 }
 
 template <typename T>
 void LinkedList<T>::Set(int index, const T& value) {
     if (!Head || !Last || Size <= 0) return;
     if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-    TNode<T>* Actual_Node = Head;
-    for (int i = 1; i <= index; i++) {
-        Actual_Node = Actual_Node->Next_Node;
+    TNode<T>* Actual_Node = nullptr;
+    if (index >= Size / 2) {
+        Actual_Node = Last;
+        for (int i = Size - 1; i > index; i--) {
+            Actual_Node = Actual_Node->Prev_Node;
+        }
+    }
+    else {
+        Actual_Node = Head;
+        for (int i = 1; i <= index; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+        }
     }
     Actual_Node->Value = value;
-    return;
+}
+
+template <typename T>
+void LinkedList<T>::Set(int index, const T&& value) {
+    if (!Head || !Last || Size <= 0) return;
+    if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
+    TNode<T>* Actual_Node = nullptr;
+    if (index >= Size / 2) {
+        Actual_Node = Last;
+        for (int i = Size - 1; i > index; i--) {
+            Actual_Node = Actual_Node->Prev_Node;
+        }
+    }
+    else {
+        Actual_Node = Head;
+        for (int i = 1; i <= index; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+        }
+    }
+    Actual_Node->Value = std::move(value);
 }
 
 template <typename T>
 void LinkedList<T>::InsertAt(int index, const T& value) {
     if (index < 0 || index > Size) throw std::out_of_range("Index out of range");
-    else if (index == 0 || index == Size) Append(value);
+    if (index == 0) Prepend(value);
+    else if (index == Size) Append(value);
+    else if (index >= Size / 2) {
+        TNode<T>* Actual_Node = Last;
+        for (int i = Size - 1; i > index; i--) {
+            Actual_Node = Actual_Node->Prev_Node;
+        }
+        TNode<T>* new_Node = new TNode<T>(value);
+        new_Node->Next_Node = Actual_Node;
+        new_Node->Prev_Node = Actual_Node->Prev_Node;
+        Actual_Node->Prev_Node->Next_Node = new_Node;
+        Actual_Node->Prev_Node = new_Node;
+        Size++;
+    }
     else {
         TNode<T>* Actual_Node = Head;
-        for (int i = 1; i < index; i++) {
+        for (int i = 0; i < index; i++) {
             Actual_Node = Actual_Node->Next_Node;
         }
         TNode<T>* new_Node = new TNode<T>(value);
-        new_Node->Next_Node = Actual_Node->Next_Node;
-        Actual_Node->Next_Node = new_Node;
+        new_Node->Next_Node = Actual_Node;
+        new_Node->Prev_Node = Actual_Node->Prev_Node;
+        Actual_Node->Prev_Node->Next_Node = new_Node;
+        Actual_Node->Prev_Node = new_Node;
         Size++;
     }
-    return;
+}
+
+template <typename T>
+void LinkedList<T>::InsertAt(int index, const T&& value) {
+    if (index < 0 || index > Size) throw std::out_of_range("Index out of range");
+    if (index == 0) Prepend(std::move(value));
+    else if (index == Size) Append(std::move(value));
+    else if (index >= Size / 2) {
+        TNode<T>* Actual_Node = Last;
+        for (int i = Size - 1; i > index; i--) {
+            Actual_Node = Actual_Node->Prev_Node;
+        }
+        TNode<T>* new_Node = new TNode<T>(std::move(value));
+        new_Node->Next_Node = Actual_Node;
+        new_Node->Prev_Node = Actual_Node->Prev_Node;
+        Actual_Node->Prev_Node->Next_Node = new_Node;
+        Actual_Node->Prev_Node = new_Node;
+        Size++;
+    }
+    else {
+        TNode<T>* Actual_Node = Head;
+        for (int i = 0; i < index; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+        }
+        TNode<T>* new_Node = new TNode<T>(std::move(value));
+        new_Node->Next_Node = Actual_Node;
+        new_Node->Prev_Node = Actual_Node->Prev_Node;
+        Actual_Node->Prev_Node->Next_Node = new_Node;
+        Actual_Node->Prev_Node = new_Node;
+        Size++;
+    }
 }
 
 template <typename T>
@@ -334,57 +498,89 @@ void LinkedList<T>::Resize(int size) {
         Delete();
         Head = nullptr;
         Last = nullptr;
+        Size = 0;
     }
-    else if (Head == nullptr) {
-        Head = new TNode<T>(T{});
-        Last = Head;
-        for (int i = 1; i < size; i++) {
-            Last->Next_Node = new TNode<T>(T{});
-            Last = Last->Next_Node;
+    else {
+        if (size <= Size) {
+            TNode<T>* Actual_Node = Head;
+            for (int i = 0; i < size; i++) {
+                Actual_Node = Actual_Node->Next_Node;
+            }
+            TNode<T>* temp = Actual_Node;
+            while (temp) {
+                TNode<T>* next = temp->Next_Node;
+                delete temp;
+                temp = next;
+            }
+            Last = Actual_Node->Prev_Node;
+            if (Last) Last->Next_Node = nullptr;
+            Size = size;
+        }
+        else {
+            for (int i = Size; i < size; i++) {
+                Append(T{});
+            }
+        }
+    }
+}
+
+template <typename T>
+void LinkedList<T>::RemoveAt(int index) {
+    if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
+    TNode<T>* Actual_Node = nullptr;
+    if (index >= Size / 2) {
+        Actual_Node = Last;
+        for (int i = Size - 1; i > index; i--) {
+            Actual_Node = Actual_Node->Prev_Node;
         }
     }
     else {
-        if (size < Size) {
-            TNode<T>* last = Head;
-            for (int i = 1; i < size; i++) {
-                last = last->Next_Node;
-            }
-            Last = last;
-            last = last->Next_Node;
-            while (last != nullptr) {
-                TNode<T>* deleted_Node = last;
-                last = last->Next_Node;
-                delete deleted_Node;
-            }
-            if (Last->Next_Node) Last->Next_Node = nullptr;
-        }
-        else if (size > Size) {
-            for (int i = size; i < Size; i++) {
-                Last->Next_Node = new TNode<T>(T{});
-                Last = Last->Next_Node;
-            }
+        Actual_Node = Head;
+        for (int i = 0; i < index; i++) {
+            Actual_Node = Actual_Node->Next_Node;
         }
     }
-    Size = size;
-    return;
-
+    if (Actual_Node == Head) {
+        Head = Head->Next_Node;
+        if (Head) Head->Prev_Node = nullptr;
+    }
+    else if (Actual_Node == Last) {
+        Last = Last->Prev_Node;
+        Last->Next_Node = nullptr;
+    }
+    else {
+        Actual_Node->Prev_Node->Next_Node = Actual_Node->Next_Node;
+        Actual_Node->Next_Node->Prev_Node = Actual_Node->Prev_Node;
+    }
+    delete Actual_Node;
+    Size--;
+    if (Size == 0) {
+        Head = nullptr;
+        Last = nullptr;
+    }
 }
 
 template <typename T>
 LinkedList<T>* LinkedList<T>::GetSubList(int startIndex, int endIndex) const {
-    if (!Head || !Last || Size <= 0) return new LinkedList<T>();
+    LinkedList<T>* list = new LinkedList<T>();
+    if (!Head || !Last || Size <= 0) return list;
     if (startIndex < 0 || startIndex >= Size || endIndex > Size || startIndex > endIndex) throw std::out_of_range("Index out of range");
-    LinkedList<T>* list = new LinkedList<T>(endIndex - startIndex);
-    TNode<T>* Actual_Node = Head;
-    for (int i = 1; i <= startIndex; i++) {
-        Actual_Node = Actual_Node->Next_Node;
+    TNode<T>* Actual_Node = nullptr;
+    if (startIndex >= Size / 2) {
+        Actual_Node = Last;
+        for (int i = Size - 1; i > startIndex; i--) {
+            Actual_Node = Actual_Node->Prev_Node;
+        }
     }
-    list->Head->Value = Actual_Node->Value;
-    list->Last = list->Head;
-    for (int i = startIndex + 1; i < endIndex; i++) {
+    else {
+        Actual_Node = Head;
+        for (int i = 1; i <= startIndex; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+        }
+    }
+    for (int i = startIndex; i < endIndex; i++) {
+        list->Append(Actual_Node->Value);
         Actual_Node = Actual_Node->Next_Node;
-        list->Last = list->Last->Next_Node;
-        list->Last->Value = Actual_Node->Value;
     }
     return list;
 }
@@ -395,10 +591,12 @@ LinkedList<T>* LinkedList<T>::Concat(LinkedList<T> *other) const {
     if (!other || !other->Head || !other->Last || other->Size <= 0) return result;
     TNode<T>* Actual_Node = other->Head;
     result->Last->Next_Node = new TNode<T>(Actual_Node->Value);
+    result->Last->Next_Node->Prev_Node = result->Last;
     result->Last = result->Last->Next_Node;
     for (int i = 1; i < other->Size; i++) {
         Actual_Node = Actual_Node->Next_Node;
         result->Last->Next_Node = new TNode<T>(Actual_Node->Value);
+        result->Last->Next_Node->Prev_Node = result->Last;
         result->Last = result->Last->Next_Node;
     }
     result->Size += other->Size;
@@ -406,11 +604,7 @@ LinkedList<T>* LinkedList<T>::Concat(LinkedList<T> *other) const {
 }
 
 template <typename T>
-std::string LinkedList<T>::toString() const {
-    // if constexpr (!std::is_same_v<T, int> && 
-    //           !std::is_same_v<T, double> && 
-    //           !std::is_same_v<T, char> && 
-    //           !std::is_same_v<T, std::string>) return "This type is not allowed for toString";
+std::string LinkedList<T>::toString() const noexcept {
     std::ostringstream oss;
     oss << "[";
     if (Size > 0 && Head ) {
@@ -428,7 +622,6 @@ std::string LinkedList<T>::toString() const {
 template <typename T>
 template <typename Container>
 LinkedList<T>* LinkedList<T>::From(const Container& container) {
-    // LinkedList<T>* result = new LinkedList<T>();
     Delete();
     for (auto it = container.begin(); it != container.end(); ++it) {
         Append(*it);
@@ -441,16 +634,11 @@ template <typename U>
 LinkedList<U>* LinkedList<T>::Map(std::function<U(T)> f) const {
     LinkedList<U>* result = new LinkedList<U>();
     if (!Head || !Last || Size <= 0) return result;
-    result->Size = Size;
-    TNode<T>* temp = Head;
-    result->Head = new TNode(f(temp->Value));
-    TNode<U>* Actual_Node = result->Head;
-    for (int i = 1 ; i < Size; i++) {
-        temp = temp->Next_Node;
-        Actual_Node->Next_Node = new TNode(f(temp->Value));
+    TNode<T>* Actual_Node = Head;
+    while (Actual_Node) {
+        result->Append(f(Actual_Node->Value));
         Actual_Node = Actual_Node->Next_Node;
     }
-    result->Last = Actual_Node;
     return result;
 }
 
@@ -460,10 +648,12 @@ LinkedList<T>* LinkedList<T>::FlatMap(std::function<LinkedList<T>*(U)> f) const 
     LinkedList<T>* result = new LinkedList<T>();
     for (auto it = begin(); it != end(); ++it) {
         LinkedList<T>* temp = f(*it);
-        for (auto tempIt = temp->begin(); tempIt != temp->end(); ++tempIt) {
-            result->Append(*tempIt);
+        if (temp) {
+            for (auto tempIt = temp->begin(); tempIt != temp->end(); ++tempIt) {
+                result->Append(*tempIt);
+            }
+            delete temp;
         }
-        delete temp;
     }
     return result;
 }
@@ -473,21 +663,9 @@ LinkedList<T>* LinkedList<T>::Where(std::function<bool(T)> f) const {
     LinkedList<T>* result = new LinkedList<T>();
     if (!Head || !Last || Size <= 0) return result;
     TNode<T>* Actual_Node = Head;
-    while (Actual_Node != nullptr && !f(Actual_Node->Value)) {
-        Actual_Node = Actual_Node->Next_Node;
-    }
-    if (!Actual_Node) return result;
-    result->Head = new TNode(Actual_Node->Value);
-    result->Last = result->Head;
-    result->Size++;
-    TNode<T>* temp = result->Head;
-    Actual_Node = Actual_Node->Next_Node;
     while (Actual_Node) {
         if (f(Actual_Node->Value)) {
-            temp->Next_Node = new TNode(Actual_Node->Value);
-            temp = temp->Next_Node;
-            result->Last = temp;
-            result->Size++;
+            result->Append(Actual_Node->Value);
         }
         Actual_Node = Actual_Node->Next_Node;
     }
@@ -509,6 +687,7 @@ T LinkedList<T>::Reduce(std::function<T(T, T)> f, const T& c) const {
 template <typename T>
 template <typename... Lists>
 LinkedList<std::tuple<T, typename Lists::value_type...>>* LinkedList<T>::Zip(const LinkedList<T>* first, const Lists*... lists) const {
+    if (!first) throw std::invalid_argument("First list is null");
     LinkedList<std::tuple<T, typename Lists::value_type...>>* result = new LinkedList<std::tuple<T, typename Lists::value_type...>>();
 
     auto it_first = first->begin();
@@ -552,19 +731,19 @@ std::tuple<LinkedList<Tuples>...>* LinkedList<T>::UnZip() const {
 }
 
 template <typename T>
-void LinkedList<T>::Delete() {
-    while (Head != nullptr) {
-        TNode<T>* Actual_Node = Head;
-        Head = Head->Next_Node;
-        delete Actual_Node;
+void LinkedList<T>::Delete() noexcept {
+    while (Head) {
+        TNode<T>* temp = Head->Next_Node;
+        delete Head;
+        Head = temp;
     }
+    Head = nullptr;
     Last = nullptr;
     Size = 0;
-    return;
 }
 
 template <typename T>
-LinkedList<T>::~LinkedList() {
+LinkedList<T>::~LinkedList() noexcept {
     Delete();
 }
 

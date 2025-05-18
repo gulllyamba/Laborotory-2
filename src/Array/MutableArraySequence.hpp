@@ -15,6 +15,13 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
         MutableArraySequence(const MutableArraySequence<T>& other) : ArraySequence<T>(other) {}
         MutableArraySequence(const DynamicArray<T>& other) : ArraySequence<T>(other) {}
 
+        MutableArraySequence<T>& operator=(const MutableArraySequence<T>& other) {
+            if (this == &other) return *this;
+            if (this->array) delete this->array;
+            this->array = new DynamicArray<T>(*other.array);
+            return *this;
+        }
+
         T Get(int index) const override {
             return this->array->Get(index);
         }
@@ -27,11 +34,13 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
         int GetSize() const override {
             return this->array->GetSize();
         }
+        int GetCapacity() const override{
+            return this->array->GetCapacity();
+        }
 
-        // std::string toString() const override {
-        //     return this->array->toString();
-        // }
-
+        MutableArraySequence<T>* Reserve(int newCapacity) {
+            return dynamic_cast<MutableArraySequence<T>*>(Instance()->ReserveInternal(newCapacity));
+        }
         MutableArraySequence<T>* Set(int index, const T& value) override {
             return dynamic_cast<MutableArraySequence<T>*>(Instance()->SetInternal(index, value));
         }
@@ -46,6 +55,9 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
         }
         MutableArraySequence<T>* Resize(int size) override {
             return dynamic_cast<MutableArraySequence<T>*>(Instance()->ResizeInternal(size));
+        }
+        MutableArraySequence<T>* RemoveAt(int index) override {
+            return dynamic_cast<MutableArraySequence<T>*>(Instance()->RemoveAtInternal(index));
         }
 
         MutableArraySequence<T>* GetSubSequence(int startIndex, int endIndex) const override {
@@ -106,6 +118,10 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
                 unzip(std::index_sequence_for<Tuples...>{});
             }
             return result;
+        }
+
+        ~MutableArraySequence() override {
+            if (this->array) delete this->array;
         }
 
     private:

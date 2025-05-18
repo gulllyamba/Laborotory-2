@@ -9,6 +9,13 @@ class ArraySequence : public Sequence<T>{
     protected:
         DynamicArray<T>* array;
 
+        virtual int GetCapacity() const = 0;
+
+        ArraySequence<T>* ReserveInternal(int newCapacity) {
+            array->Reserve(newCapacity);
+            return this;
+        }
+
         ArraySequence<T>* SetInternal(int index, const T& value) {
             array->Set(index, value);
             return this;
@@ -31,6 +38,11 @@ class ArraySequence : public Sequence<T>{
 
         ArraySequence<T>* ResizeInternal(int size) {
             array->Resize(size);
+            return this;
+        }
+
+        ArraySequence<T>* RemoveAtInternal(int index) {
+            array->RemoveAt(index);
             return this;
         }
 
@@ -58,10 +70,6 @@ class ArraySequence : public Sequence<T>{
 
         DynamicArray<T>* GetArray() const {
             return array;
-        }
-
-        virtual ~ArraySequence() {
-            if (array) delete array;
         }
 };
 

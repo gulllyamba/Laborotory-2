@@ -11,7 +11,6 @@ class Sequence {
         virtual T GetLast() const = 0;
         virtual T Get(int index) const = 0;
         virtual int GetSize() const = 0;
-        //virtual std::string toString() const = 0;
         
         virtual ~Sequence()  = default;
 };
