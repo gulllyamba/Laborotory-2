@@ -32,93 +32,91 @@ std::string toString(const ImmutableArraySequence<T>& array) {
 int main() {
     // SEGMENTED LIST
 
-    int items[] = {1, 2, 3, 4, 5};
-    SegmentedList<int>* A = new SegmentedList<int>(items, 5);
-    SegmentedList<int>* B = new SegmentedList<int>(items, 5);
-    SegmentedList<int>* C = new SegmentedList<int>();
-    SegmentedList<int>* D = new SegmentedList<int>();
-    SegmentedList<int>* E = new SegmentedList<int>(items, 5);
-    SegmentedList<int>* F = new SegmentedList<int>(items, 5);
+    // int items[] = {1, 2, 3, 4, 5};
+    // SegmentedList<int>* A = new SegmentedList<int>(items, 5);
+    // SegmentedList<int>* B = new SegmentedList<int>(items, 5);
+    // SegmentedList<int>* C = new SegmentedList<int>();
+    // SegmentedList<int>* D = new SegmentedList<int>();
+    // SegmentedList<int>* E = new SegmentedList<int>(items, 5);
+    // SegmentedList<int>* F = new SegmentedList<int>(items, 5);
 
-    std::cout << "Работа с Size = 0:\n";
-    C->Append(1);
-    std::cout << C->toString_Segments() << "\t" << C->GetSize() << "\n"; 
-    D->Prepend(5);
-    std::cout << D->toString_Segments() << "\t" << D->GetSize() << "\n\n"; 
+    // std::cout << "Работа с Size = 0:\n";
+    // C->Append(1);
+    // std::cout << C->toString_Segments() << "\t" << C->GetSize() << "\n"; 
+    // D->Prepend(5);
+    // std::cout << D->toString_Segments() << "\t" << D->GetSize() << "\n\n"; 
 
-    std::cout << "Append:\n";
-    std::cout << A->toString_Segments() << "\t" << A->GetSize() << "\n";
-    for (int i = 0; i < 16; i++) {
-        A->Append(i);
-        std::cout << A->toString_Segments() << "\t" << A->GetSize() << " " << A->GetCapacity() << "\n";
-    }
-    for (int i = 0; i < A->GetSize(); i++) {
-        std::cout << A->Get(i) << " ";
-    }
-    std::cout << "\n\n";
+    // std::cout << "Append:\n";
+    // std::cout << A->toString_Segments() << "\t" << A->GetSize() << "\n";
+    // for (int i = 0; i < 16; i++) {
+    //     A->Append(i);
+    //     std::cout << A->toString_Segments() << "\t" << A->GetSize() << " " << A->GetCapacity() << "\n";
+    // }
+    // for (int i = 0; i < A->GetSize(); i++) {
+    //     std::cout << A->Get(i) << " ";
+    // }
+    // std::cout << "\n\n";
 
-    std::cout << "Prepend:\n";
-    std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
-    for (int i = 0; i < 16; i++) {
-        B->Prepend(i);
-        std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
-    }
-    for (int i = 0; i < B->GetSize(); i++) {
-        std::cout << B->Get(i) << " ";
-    }
-    std::cout << "\n\n";
+    // std::cout << "Prepend:\n";
+    // std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
+    // for (int i = 0; i < 16; i++) {
+    //     B->Prepend(i);
+    //     std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
+    // }
+    // for (int i = 0; i < B->GetSize(); i++) {
+    //     std::cout << B->Get(i) << " ";
+    // }
+    // std::cout << "\n\n";
 
-    std::cout << "Set:\n";
-    for (int i = 0; i < E->GetSize(); i++) {
-        E->Set(i, i * 10);
-    }
-    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    std::cout << "\n";
+    // std::cout << "Set:\n";
+    // for (int i = 0; i < E->GetSize(); i++) {
+    //     E->Set(i, i * 10);
+    // }
+    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // std::cout << "\n";
 
-    std::cout << "InsertAt:\n";
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -10);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -9);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -8);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -7);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -6);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(0, -5);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // std::cout << "InsertAt:\n";
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(1, -10);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(1, -9);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(1, -8);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(1, -7);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(1, -6);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
 
-    std::cout << "Resize:\n";
-    F->Resize(5);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->Resize(2);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // std::cout << "Resize:\n";
+    // F->Resize(5);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->Resize(2);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
 
-    std::cout << "RemoveAt:\n";
-    int E_size = E->GetSize();
-    for (int i = 0; i < E_size; i++) {
-        E->RemoveAt(0);
-        std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    }
+    // std::cout << "RemoveAt:\n";
+    // int E_size = E->GetSize();
+    // for (int i = 0; i < E_size; i++) {
+    //     E->RemoveAt(0);
+    //     std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // }
 
-    std::cout << "GetSubSegmentedList:\n";
-    SegmentedList<int>* G = A->GetSubSegmentedListArray(3, 14);
-    std::cout << G->toString_Segments() << "\t" << G->GetSize() << "\n";
+    // std::cout << "GetSubSegmentedList:\n";
+    // SegmentedList<int>* G = A->GetSubSegmentedListArray(3, 14);
+    // std::cout << G->toString_Segments() << "\t" << G->GetSize() << "\n";
 
-    std::cout << "Concat:\n";
-    SegmentedList<int>* H = F->Concat(F);
-    std::cout << H->toString_Segments() << "\t" << H->GetSize() << "\n";
+    // std::cout << "Concat:\n";
+    // SegmentedList<int>* H = F->Concat(F);
+    // std::cout << H->toString_Segments() << "\t" << H->GetSize() << "\n";
 
-    delete A;
-    delete B;
-    delete C;
-    delete D;
-    delete E;
-    delete F;
-    delete G;
-    delete H;
+    // delete A;
+    // delete B;
+    // delete C;
+    // delete D;
+    // delete E;
+    // delete F;
+    // delete G;
+    // delete H;
 
     ////////////////////////////////////////////////////////////////////////////
     // ADAPTIVE SEQUENCE

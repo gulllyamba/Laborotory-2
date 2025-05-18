@@ -6,8 +6,6 @@
 template <typename T>
 class SegmentedList;
 
-
-
 template <typename T>
 class Segment {
     public:
@@ -15,7 +13,7 @@ class Segment {
         Segment(int size) : Array(new DynamicArray<T>(size)), Array_Size(size) {}
         Segment() : Array(new DynamicArray<T>()), Array_Size(0) {}
         Segment(const Segment<T>& other) : Array(new DynamicArray<T>(*other.Array)), Array_Size(other.Array_Size) {}
-        Segment(Segment<T>&& other) : Array(new DynamicArray<T>(*other.Array)), Array_Size(other.Array_Size) {
+        Segment(const Segment<T>&& other) : Array(new DynamicArray<T>(*other.Array)), Array_Size(other.Array_Size) {
             other.Array = nullptr;
             other.Array_Size = 0;
         }
@@ -91,7 +89,6 @@ class SegmentedList {
                 (*Segments)[i] = Segment<T>((*other.Segments)[i]);
             }
         }
-
 
         T GetFirst() const {
             if (!Segments || Segments_Size <= 0) throw std::out_of_range("SegmentedList is empty");
@@ -215,22 +212,18 @@ class SegmentedList {
         void InsertAt(int index, const T& value) {
             if (!Segments || Segments_Size < 0) throw std::out_of_range("SegmentedList is empty");
             if (index > Elements_Size || index < 0) throw std::out_of_range("Index out of range");
-            if (Segments_Size >= GetCapacity()) Reserve(Segments_Size * 2);
-            if (index == Elements_Size) {
-                Append(value);
-                return;
-            }
-            int i = 0;
-            while (index >= (*Segments)[i].Array_Size) {
-                index -= (*Segments)[i].Array_Size;
-                i++;
+            int i;
+            for (i = 0; i < Segments_Size; i++) {
+                int local_size = (*Segments)[i].Array_Size;
+                if (index >= local_size) index -= local_size;
+                else break;
             }
             if ((*Segments)[i].Array_Size < MAX_SEGMENT_CAPACITY) {
                 (*Segments)[i].Array->InsertAt(index, value);
                 (*Segments)[i].Array_Size++;
             }
             else {
-                if (Segments_Size > i + 1 && (*Segments)[i + 1].Array_Size < MAX_SEGMENT_CAPACITY) {
+                if ((*Segments)[i + 1].Array_Size < MAX_SEGMENT_CAPACITY) {
                     (*Segments)[i + 1].Array->Prepend((*Segments)[i].Array->GetLast());
                     (*Segments)[i + 1].Array_Size++;
                 }
@@ -253,22 +246,18 @@ class SegmentedList {
         void InsertAt(int index, const T&& value) {
             if (!Segments || Segments_Size < 0) throw std::out_of_range("SegmentedList is empty");
             if (index > Elements_Size || index < 0) throw std::out_of_range("Index out of range");
-            if (Segments_Size >= GetCapacity()) Reserve(Segments_Size * 2);
-            if (index == Elements_Size) {
-                Append(std::move(value));
-                return;
-            }
-            int i = 0;
-            while (index >= (*Segments)[i].Array_Size) {
-                index -= (*Segments)[i].Array_Size;
-                i++;
+            int i;
+            for (i = 0; i < Segments_Size; i++) {
+                int local_size = (*Segments)[i].Array_Size;
+                if (index >= local_size) index -= local_size;
+                else break;
             }
             if ((*Segments)[i].Array_Size < MAX_SEGMENT_CAPACITY) {
                 (*Segments)[i].Array->InsertAt(index, std::move(value));
                 (*Segments)[i].Array_Size++;
             }
             else {
-                if (Segments_Size > i + 1 && (*Segments)[i + 1].Array_Size < MAX_SEGMENT_CAPACITY) {
+                if ((*Segments)[i + 1].Array_Size < MAX_SEGMENT_CAPACITY) {
                     (*Segments)[i + 1].Array->Prepend((*Segments)[i].Array->GetLast());
                     (*Segments)[i + 1].Array_Size++;
                 }
@@ -383,7 +372,6 @@ class SegmentedList {
                 items[j] = (*Segments)[i].Array->Get(index);
             }
             SegmentedList<T>* result = new SegmentedList<T>(items, Elements_Size + other->Elements_Size);
-            delete [] items;
             return result;
         }
 
