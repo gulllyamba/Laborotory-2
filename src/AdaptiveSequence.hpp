@@ -4,32 +4,39 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include "Iterator.hpp"
 
 template <typename T>
 class AdaptiveSequence;
 
 template <typename T, bool IsConst>
-class AdaptIterator {
+class AdaptIterator : public IIterator<T, IsConst> {
     public:
-        using value_type = T;
+        using value_type = typename IIterator<T, IsConst>::value_type;
         using pointer = std::conditional_t<IsConst, const T*, T*>;
-        using reference = std::conditional_t<IsConst, const T&, T&>;
-        using difference_type = std::ptrdiff_t;
+        using reference = typename IIterator<T, IsConst>::reference;
+        using difference_type = typename IIterator<T, IsConst>::difference_type;
         using iterator_category = std::random_access_iterator_tag;
 
         AdaptIterator(pointer ptr) : current(ptr) {}
 
+        bool HasNext() const override {
+            return true;
+        }
+        reference Current() override {
+            return *current;
+        }
+        void MoveNext() override {
+            ++current;
+        }
+
         reference operator*() const {
-            if (!current) {
-                throw std::out_of_range("Iterator out of range");
-            }
+            if (!current) throw std::out_of_range("Iterator out of range");
             return *current;
         }
 
         pointer operator->() const {
-            if (!current) {
-                throw std::out_of_range("Iterator out of range");
-            }
+            if (!current) throw std::out_of_range("Iterator out of range");
             return current;
         }
 
@@ -51,6 +58,15 @@ class AdaptIterator {
             AdaptIterator temp = *this;
             --current;
             return temp;
+        }
+
+        AdaptIterator& operator+=(difference_type n) {
+            current += n;
+            return *this; 
+        }
+        AdaptIterator& operator-=(difference_type n) {
+            current -= n;
+            return *this; 
         }
 
         AdaptIterator operator+(difference_type n) const {
@@ -98,7 +114,7 @@ template <typename T>
 using AdConstIterator = AdaptIterator<T, true>;
 
 template <typename T>
-class AdaptiveSequence {
+class AdaptiveSequence : public IEnumerable<T> {
     public:
         using value_type = T;
         using iterator = AdIterator<T>;
@@ -123,13 +139,20 @@ class AdaptiveSequence {
             return const_iterator(Data + correctLeft + Size);
         }
 
+        std::unique_ptr<IIterator<T, false>> GetIterator() override {
+            return std::make_unique<iterator>(Data + correctLeft);
+        }
+        std::unique_ptr<IIterator<T, true>> GetConstIterator() const override {
+            return std::make_unique<const_iterator>(Data + correctLeft);
+        }
+
         AdaptiveSequence(T* items, int size) {
             if (size < 0) throw std::invalid_argument("Size cannot be negative");
             else if (size == 0) {
-                Data = nullptr;
                 Size = 0;
                 correctLeft = 0;
-                correctRight = 0;
+                correctRight = 1;
+                Data  = new T[correctRight]{};
                 return;
             }
             else if (items) {
@@ -189,7 +212,6 @@ class AdaptiveSequence {
         }
         
         AdaptiveSequence<T>* Append(const T& value) {
-            if (Size == 0) Resize(Size + 1);
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 for (int i = 0; i < Size; i++) {
@@ -206,7 +228,6 @@ class AdaptiveSequence {
             return this;
         }
         AdaptiveSequence<T>* Append(const T&& value) {
-            if (Size == 0) Resize(Size + 1);
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 for (int i = 0; i < Size; i++) {
@@ -224,7 +245,6 @@ class AdaptiveSequence {
         }
 
         AdaptiveSequence<T>* Prepend(const T& value) {
-            if (Size == 0) Resize(Size + 1);
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 Data[correctLeft - 1] = value;
@@ -241,7 +261,6 @@ class AdaptiveSequence {
             return this;
         }
         AdaptiveSequence<T>* Prepend(const T&& value) {
-            if (Size == 0) Resize(Size + 1);
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 Data[correctLeft - 1] = std::move(value);
@@ -272,8 +291,7 @@ class AdaptiveSequence {
         }
 
         AdaptiveSequence<T>* InsertAt(int index, const T& value) {
-            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-            if (Size == 0) Resize(Size + 1);
+            if (index < 0 || index > Size) throw std::out_of_range("Index out of range");
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 for (int i = 0; i < index; i++) {
@@ -293,8 +311,7 @@ class AdaptiveSequence {
             return this;
         }
         AdaptiveSequence<T>* InsertAt(int index, const T&& value) {
-            if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
-            if (Size == 0) Resize(Size + 1);
+            if (index < 0 || index > Size) throw std::out_of_range("Index out of range");
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 for (int i = 0; i < index; i++) {
@@ -318,10 +335,10 @@ class AdaptiveSequence {
             if (size < 0) throw std::invalid_argument("Size cannot be negative");
             else if (size == 0) {
                 delete [] Data;
-                Data = nullptr;
                 Size = 0;
                 correctLeft = 0;
-                correctRight = 0;
+                correctRight = 1;
+                Data = new T[correctRight]{};
             }
             else if (Size == size) {
                 T* newData = new T[Size * 2]{};
@@ -404,6 +421,13 @@ class AdaptiveSequence {
                     }
                 }
             }
+            else if ((correctLeft > 0 || correctRight > 0) && !flag) {
+                oss << Data[0];
+                for (int i = 1; i < correctLeft; i++) oss << ", " << Data[i];
+                for (int i = 0; i < correctRight; i++) {
+                    oss << ", " << Data[correctLeft + Size + i];
+                }
+            }
             oss << "]";
             return oss.str();
         }
@@ -434,7 +458,8 @@ class AdaptiveSequence {
             for (auto it = container.begin(); it != container.end(); ++it) Size++;
             Data = new T[Size * 2]{};
             correctLeft = Size / 2;
-            correctRight = Size / 2;
+            correctRight = Size / 2 + 1;
+            if (Size % 2 == 0) correctRight = Size / 2;
             for (auto it = container.begin(), i = 0; it != container.end(); ++it, i++) {
                 Data[correctLeft + i] = *it;
             }

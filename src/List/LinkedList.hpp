@@ -6,6 +6,8 @@
 #include <tuple>
 #include <utility>
 #include <sstream>
+#include <memory>
+#include "../Iterator.hpp"
 
 template <typename T>
 class LinkedList;
@@ -28,15 +30,26 @@ class TNode {
 };
 
 template <typename T, bool IsConst>
-class ListIterator {
+class ListIterator : public IIterator<T, IsConst> {
     public:
-        using value_type = T;
+        using value_type = typename IIterator<T, IsConst>::value_type;
         using pointer = std::conditional_t<IsConst, const T*, T*>;
-        using reference = std::conditional_t<IsConst, const T&, T&>;
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
+        using reference = typename IIterator<T, IsConst>::reference;
+        using difference_type = typename IIterator<T, IsConst>::difference_type;
+        using iterator_category = std::bidirectional_iterator_tag;
 
         ListIterator(TNode<T>* node) : current(node) {}
+
+        bool HasNext() const override {
+            return current != nullptr;
+        }
+        reference Current() override {
+            if (!current) throw std::out_of_range("Iterator out of range");
+            return current->Value;
+        }
+        void MoveNext() override {
+            if (current) current = current->Next_Node;
+        }
 
         reference operator*() const {
             if (!current) throw std::out_of_range("Iterator out of range");
@@ -77,22 +90,33 @@ class ListIterator {
             return !(*this == other);
         } 
 
+        template <bool OtherConst>
+        bool operator==(const ListIterator<T, OtherConst>& other) const {
+            return current == other.current;
+        }
+        template <bool OtherConst>
+        bool operator!=(const ListIterator<T, OtherConst>& other) const {
+            return !(*this == other);
+        }
+
     private:
         friend class LinkedList<T>;
+        template <typename U, bool OtherConst>
+        friend class ListIterator;
         TNode<T>* current;
 };
 
 template <typename T>
-using Iterator = ListIterator<T, false>;
+using LIterator = ListIterator<T, false>;
 template <typename T>
-using ConstIterator = ListIterator<T, true>;
+using LConstIterator = ListIterator<T, true>;
 
 template <typename T>
-class LinkedList {
+class LinkedList : public IEnumerable<T> {
     public:
         using value_type = T;
-        using iterator = Iterator<T>;
-        using const_iterator = ConstIterator<T>;
+        using iterator = LIterator<T>;
+        using const_iterator = LConstIterator<T>;
 
         iterator begin() { 
             return iterator(Head);
@@ -111,6 +135,13 @@ class LinkedList {
         }
         const_iterator cend() const {
             return const_iterator(nullptr);
+        }
+
+        std::unique_ptr<IIterator<T, false>> GetIterator() override {
+            return std::make_unique<iterator>(Head);
+        }
+        std::unique_ptr<IIterator<T, true>> GetConstIterator() const override {
+            return std::make_unique<const_iterator>(Head);
         }
 
         LinkedList(const T* items, int count);
@@ -228,7 +259,7 @@ class LinkedList {
         TNode<T>* Last = nullptr;
         int Size = 0;
 
-        template<typename U>
+        template <typename U>
         friend class LinkedList;
 };
 

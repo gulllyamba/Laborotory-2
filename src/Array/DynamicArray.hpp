@@ -6,32 +6,40 @@
 #include <tuple>
 #include <utility>
 #include <sstream>
+#include <memory>
+#include "../Iterator.hpp"
 
 template <typename T>
 class DynamicArray;
 
 template <typename T, bool IsConst>
-class ArrayIterator {
+class ArrayIterator : public IIterator<T, IsConst> {
     public:
-        using value_type = T;
+        using value_type = typename IIterator<T, IsConst>::value_type;
         using pointer = std::conditional_t<IsConst, const T*, T*>;
-        using reference = std::conditional_t<IsConst, const T&, T&>;
-        using difference_type = std::ptrdiff_t;
+        using reference = typename IIterator<T, IsConst>::reference;
+        using difference_type = typename IIterator<T, IsConst>::difference_type;
         using iterator_category = std::random_access_iterator_tag;
 
         ArrayIterator(pointer ptr) : current(ptr) {}
 
+        bool HasNext() const override {
+            return true;
+        }
+        reference Current() override {
+            return *current;
+        }
+        void MoveNext() override {
+            ++current;
+        }
+
         reference operator*() const {
-            if (!current) {
-                throw std::out_of_range("Iterator out of range");
-            }
+            if (!current) throw std::out_of_range("Iterator out of range");
             return *current;
         }
 
         pointer operator->() const {
-            if (!current) {
-                throw std::out_of_range("Iterator out of range");
-            }
+            if (!current) throw std::out_of_range("Iterator out of range");
             return current;
         }
 
@@ -55,6 +63,15 @@ class ArrayIterator {
             return temp;
         }
 
+        ArrayIterator& operator+=(difference_type n) {
+            current += n;
+            return *this; 
+        }
+        ArrayIterator& operator-=(difference_type n) {
+            current -= n;
+            return *this; 
+        }
+
         ArrayIterator operator+(difference_type n) const {
             return ArrayIterator(current + n);
         }
@@ -69,7 +86,7 @@ class ArrayIterator {
             return current == other.current;
         }
         bool operator!=(const ArrayIterator& other) const {
-            return !(current == other.current);
+            return !(*this == other);
         }
         bool operator<(const ArrayIterator& other) const {
             return current < other.current;
@@ -88,9 +105,19 @@ class ArrayIterator {
             return *(current + n);
         }
 
+        template <bool OtherConst>
+        bool operator==(const ArrayIterator<T, OtherConst>& other) const {
+            return current == other.current;
+        }
+        template <bool OtherConst>
+        bool operator!=(const ArrayIterator<T, OtherConst>& other) const {
+            return !(*this == other);
+        }
 
     private:
         friend class DynamicArray<T>;
+        template <typename U, bool OtherConst>
+        friend class ArrayIterator;
         pointer current;
 };
 
@@ -100,7 +127,7 @@ template <typename T>
 using AConstIterator = ArrayIterator<T, true>;
 
 template <typename T>
-class DynamicArray {
+class DynamicArray : public IEnumerable<T> {
     public:
         using value_type = T;
         using iterator = AIterator<T>;
@@ -123,6 +150,13 @@ class DynamicArray {
         }
         const_iterator cend() const {
             return const_iterator(Data + Size);
+        }
+
+        std::unique_ptr<IIterator<T, false>> GetIterator() override {
+            return std::make_unique<iterator>(Data);
+        }
+        std::unique_ptr<IIterator<T, true>> GetConstIterator() const override {
+            return std::make_unique<const_iterator>(Data);
         }
 
         DynamicArray(const T* items, int count);
@@ -291,6 +325,7 @@ void DynamicArray<T>::Append(const T& value) noexcept {
     if (Size >= capacity) Reserve((capacity == 0) ? 1 : capacity * 2);
     Data[Size] = value;
     Size++;
+
 }
 
 template <typename T>
@@ -312,14 +347,14 @@ void DynamicArray<T>::Prepend(const T&& value) noexcept {
 
 template <typename T>
 void DynamicArray<T>::Set(int index, const T& value) {
-    if (!Data || Size <= 0) return;
+    if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
     if (index >= Size || index < 0) throw std::out_of_range("Index out of range");
     Data[index] = value;
 }
 
 template <typename T>
 void DynamicArray<T>::Set(int index, const T&& value) {
-    if (!Data || Size <= 0) return;
+    if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
     if (index >= Size || index < 0) throw std::out_of_range("Index out of range");
     Data[index] = std::move(value);
 }

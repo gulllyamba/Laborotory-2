@@ -105,7 +105,7 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
         template <typename... Tuples>
         std::tuple<MutableListSequence<Tuples>...>* UnZip() const {
             std::tuple<MutableListSequence<Tuples>...>* result = new std::tuple<MutableListSequence<Tuples>...>();
-            for (auto it = (const_cast<MutableListSequence<T>*>(this))->Instance()->list->begin(); it != (const_cast<MutableListSequence<T>*>(this))->Instance()->list->end(); ++it) {
+            for (auto it = (const_cast<MutableListSequence<T>*>(this))->begin(); it != (const_cast<MutableListSequence<T>*>(this))->end(); ++it) {
                 auto unzip = [&]<size_t... Is>(std::index_sequence<Is...>) {
                     ((std::get<Is>(*result).Append(std::get<Is>(*it))), ...);
                 };

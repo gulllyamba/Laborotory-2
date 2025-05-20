@@ -5,7 +5,86 @@
 #include "LinkedList.hpp"
 
 template <typename T>
-class ListSequence : public Sequence<T> {
+class ListSequence;
+
+template <typename T, bool IsConst>
+class ListSequenceIterator : public IIterator<T, IsConst> {
+    public:
+        using value_type = typename IIterator<T, IsConst>::value_type;
+        using pointer = std::conditional_t<IsConst, const T*, T*>;
+        using reference = typename IIterator<T, IsConst>::reference;
+        using difference_type = typename IIterator<T, IsConst>::difference_type;
+        using iterator_category = std::bidirectional_iterator_tag;
+
+        using base_iterator = std::conditional_t<IsConst, typename LinkedList<T>::const_iterator, typename LinkedList<T>::iterator>;
+
+        ListSequenceIterator(LinkedList<T>* list, base_iterator ptr) : list(list), current(ptr) {}
+
+        bool HasNext() const override {
+            if (!list) return false;
+            return current != list->cend();
+        }
+
+        reference Current() override {
+            return **this;
+        }
+
+        void MoveNext() override {
+            ++(*this);
+        }
+
+        reference operator*() const {
+            if (!list || current == list->cend()) throw std::out_of_range("Iterator out of range");
+            return *current;
+        }
+
+        pointer operator->() const {
+            if (!list || current == list->cend()) throw std::out_of_range("Iterator out of range");
+            return &(*current);
+        }
+
+        ListSequenceIterator& operator++() {
+            if (!list || current == list->cend()) throw std::out_of_range("Iterator out of range");
+            ++current;
+            return *this;
+        }
+        ListSequenceIterator operator++(int) {
+            ListSequenceIterator temp = *this;
+            ++(*this);
+            return temp;
+        }
+
+        ListSequenceIterator& operator--() {
+            if (!list || current == list->cbegin()) throw std::out_of_range("Iterator out of range");
+            --current;
+            return *this;
+        }
+        ListSequenceIterator operator--(int) {
+            ListSequenceIterator temp = *this;
+            --(*this);
+            return temp;
+        }
+
+        bool operator==(const ListSequenceIterator& other) const {
+            return list == other.list && current == other.current;
+        }
+        bool operator!=(const ListSequenceIterator& other) const {
+            return !(*this == other);
+        }
+
+    private:
+        friend class ListSequence<T>;
+        LinkedList<T>* list;
+        base_iterator current;
+};
+
+template <typename T>
+using LSIterator = ListSequenceIterator<T, false>;
+template <typename T>
+using LSConstIterator = ListSequenceIterator<T, true>;
+
+template <typename T>
+class ListSequence : public Sequence<T>, public IEnumerable<T> {
     protected:
         LinkedList<T>* list;
 
@@ -42,6 +121,42 @@ class ListSequence : public Sequence<T> {
         virtual ListSequence<T>* Instance() = 0;
 
     public:
+        using value_type = T;
+        using iterator = LSIterator<T>;
+        using const_iterator = LSConstIterator<T>;
+
+        iterator begin() {
+            if (!list) throw std::runtime_error("List is not initialized");
+            return iterator(list, list->begin());
+        }
+        iterator end() {
+            if (!list) throw std::runtime_error("List is not initialized");
+            return iterator(list, list->end());
+        }
+        const_iterator begin() const {
+            if (!list) throw std::runtime_error("List is not initialized");
+            return const_iterator(list, list->cbegin());
+        }
+        const_iterator end() const {
+            if (!list) throw std::runtime_error("List is not initialized");
+            return const_iterator(list, list->cend());
+        }
+        const_iterator cbegin() const {
+            return begin();
+        }
+        const_iterator cend() const {
+            return end();
+        }
+
+        std::unique_ptr<IIterator<T, false>> GetIterator() override {
+            if (!list) throw std::runtime_error("List is not initialized");
+            return std::make_unique<iterator>(list, list->begin());
+        }
+        std::unique_ptr<IIterator<T, true>> GetConstIterator() const override {
+            if (!list) throw std::runtime_error("List is not initialized");
+            return std::make_unique<const_iterator>(list, list->cbegin());
+        }
+
         ListSequence(const T* items, int count) {
             list = new LinkedList<T>(items, count);
         }
@@ -61,8 +176,8 @@ class ListSequence : public Sequence<T> {
             return list->operator[](index);
         }
 
-        LinkedList<T>* GetList() const {
-            return list;
+        const LinkedList<T>& GetList() const {
+            return *list;
         }
 };
 

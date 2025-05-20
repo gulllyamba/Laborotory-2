@@ -110,7 +110,7 @@ class ImmutableArraySequence : virtual public ArraySequence<T>, virtual public I
         template <typename... Tuples>
         std::tuple<ImmutableArraySequence<Tuples>...>* UnZip() const {
             std::tuple<ImmutableArraySequence<Tuples>...>* result = new std::tuple<ImmutableArraySequence<Tuples>...>();
-            for (auto it = (const_cast<ImmutableArraySequence<T>*>(this))->array->begin(); it != (const_cast<ImmutableArraySequence<T>*>(this))->array->end(); ++it) {
+            for (auto it = this->cbegin(); it != this->cend(); ++it) {
                 auto unzip = [&]<size_t... Is>(std::index_sequence<Is...>) {
                     ((std::get<Is>(*result).App(std::get<Is>(*it))), ...);
                 };

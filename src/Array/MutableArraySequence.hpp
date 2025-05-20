@@ -111,7 +111,7 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
         template <typename... Tuples>
         std::tuple<MutableArraySequence<Tuples>...>* UnZip() const {
             std::tuple<MutableArraySequence<Tuples>...>* result = new std::tuple<MutableArraySequence<Tuples>...>();
-            for (auto it = (const_cast<MutableArraySequence<T>*>(this))->Instance()->array->begin(); it != (const_cast<MutableArraySequence<T>*>(this))->Instance()->array->end(); ++it) {
+            for (auto it = (const_cast<MutableArraySequence<T>*>(this))->begin(); it != (const_cast<MutableArraySequence<T>*>(this))->end(); ++it) {
                 auto unzip = [&]<size_t... Is>(std::index_sequence<Is...>) {
                     ((std::get<Is>(*result).Append(std::get<Is>(*it))), ...);
                 };
