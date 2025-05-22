@@ -55,7 +55,7 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
         }
 
         MutableListSequence<T>* GetSubSequence(int startIndex, int endIndex) const override {
-            LinkedList<T>* temp_list = (const_cast<MutableListSequence<T>*>(this))->Instance()->list->GetSubList(startIndex, endIndex);
+            LinkedList<T>* temp_list = (const_cast<MutableListSequence<T>*>(this))->Instance()->list->GetSubContainer(startIndex, endIndex);
             MutableListSequence<T>* result = new MutableListSequence<T>(*temp_list);
             delete temp_list;
             return result;

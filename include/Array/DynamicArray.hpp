@@ -8,6 +8,7 @@
 #include <sstream>
 #include <memory>
 #include "../Iterator.hpp"
+#include "../Container.hpp"
 
 template <typename T>
 class DynamicArray;
@@ -127,7 +128,7 @@ template <typename T>
 using AConstIterator = ArrayIterator<T, true>;
 
 template <typename T>
-class DynamicArray : public IEnumerable<T> {
+class DynamicArray : public Container<T>, public IEnumerable<T> {
     public:
         using value_type = T;
         using iterator = AIterator<T>;
@@ -165,26 +166,26 @@ class DynamicArray : public IEnumerable<T> {
         DynamicArray(const DynamicArray<T> &other);
         DynamicArray(DynamicArray<T>&& other) noexcept;
 
-        T GetFirst() const;
-        T GetLast() const;
-        T Get(int index) const;
-        int GetSize() const;
+        T GetFirst() const override;
+        T GetLast() const override;
+        T Get(int index) const override;
+        int GetSize() const override;
         int GetCapacity() const;
 
-        void Reserve(int newCapacity) noexcept;
-        void Append(const T& value) noexcept;
-        void Append(const T&& value) noexcept;
-        void Prepend(const T& value) noexcept;
-        void Prepend(const T&& value) noexcept;
-        void Set(int index, const T& value);
-        void Set(int index, const T&& value);
-        void InsertAt(int index, const T& value);
-        void InsertAt(int index, const T&& value);
-        void Resize(int size);
-        void RemoveAt(int index);
+        void Reserve(int newCapacity);
+        void Append(const T& value) override;
+        void Append(const T&& value) override;
+        void Prepend(const T& value) override;
+        void Prepend(const T&& value) override;
+        void Set(int index, const T& value) override;
+        void Set(int index, const T&& value) override;
+        void InsertAt(int index, const T& value) override;
+        void InsertAt(int index, const T&& value) override;
+        void Resize(int size) override;
+        void RemoveAt(int index) override;
 
-        DynamicArray<T>* GetSubDynamicArray(int startIndex, int endIndex) const;
-        DynamicArray<T>* Concat(const DynamicArray<T>* other) const;
+        DynamicArray<T>* GetSubContainer(int startIndex, int endIndex) const override;
+        DynamicArray<T>* Concat(Container<T>* other) const override;
 
         std::string toString() const noexcept;
 
@@ -309,8 +310,8 @@ int DynamicArray<T>::GetCapacity() const {
 }
 
 template <typename T>
-void DynamicArray<T>::Reserve(int newCapacity) noexcept {
-    if (newCapacity <= capacity) return;
+void DynamicArray<T>::Reserve(int newCapacity) {
+    if (newCapacity < capacity) throw std::invalid_argument("NewCapacity cannot be lower than Capacity");
     T* newData = new T[newCapacity];
     for (int i = 0; i < Size; i++) {
         newData[i] = Data[i];
@@ -321,7 +322,7 @@ void DynamicArray<T>::Reserve(int newCapacity) noexcept {
 }
 
 template <typename T>
-void DynamicArray<T>::Append(const T& value) noexcept {
+void DynamicArray<T>::Append(const T& value) {
     if (Size >= capacity) Reserve((capacity == 0) ? 1 : capacity * 2);
     Data[Size] = value;
     Size++;
@@ -329,19 +330,19 @@ void DynamicArray<T>::Append(const T& value) noexcept {
 }
 
 template <typename T>
-void DynamicArray<T>::Append(const T&& value) noexcept {
+void DynamicArray<T>::Append(const T&& value) {
     if (Size >= capacity) Reserve((capacity == 0) ? 1 : capacity * 2);
     Data[Size] = std::move(value);
     Size++;
 }
 
 template <typename T>
-void DynamicArray<T>::Prepend(const T& value) noexcept {
+void DynamicArray<T>::Prepend(const T& value) {
     InsertAt(0, value);
 }
 
 template <typename T>
-void DynamicArray<T>::Prepend(const T&& value) noexcept {
+void DynamicArray<T>::Prepend(const T&& value) {
     InsertAt(0, std::move(value));
 }
 
@@ -443,10 +444,9 @@ void DynamicArray<T>::RemoveAt(int index) {
 }
 
 template <typename T>
-DynamicArray<T>* DynamicArray<T>::GetSubDynamicArray(int startIndex, int endIndex) const {
-    DynamicArray<T>* array = new DynamicArray<T>();
-    if (!Data || Size <= 0) return array;
+DynamicArray<T>* DynamicArray<T>::GetSubContainer(int startIndex, int endIndex) const {
     if (startIndex < 0 || startIndex >= Size || endIndex > Size || startIndex > endIndex) throw std::out_of_range("Index out of range");
+    DynamicArray<T>* array = new DynamicArray<T>();
     array->Size = endIndex - startIndex;
     array->capacity = (array->Size == 0) ? 1 : array->Size * 2;
     array->Data = new T[array->capacity]{};
@@ -457,17 +457,17 @@ DynamicArray<T>* DynamicArray<T>::GetSubDynamicArray(int startIndex, int endInde
 }
 
 template <typename T>
-DynamicArray<T>* DynamicArray<T>::Concat(const DynamicArray<T>* other) const {
-    if (!other || !other->Data || other->Size <= 0) {
+DynamicArray<T>* DynamicArray<T>::Concat(Container<T>* other) const {
+    if (!dynamic_cast<DynamicArray<T>*>(other) || !(dynamic_cast<DynamicArray<T>*>(other))->Data || (dynamic_cast<DynamicArray<T>*>(other))->Size <= 0) {
         DynamicArray<T>* result = new DynamicArray<T>(*this);
         return result;
     }
-    DynamicArray<T>* result = new DynamicArray<T>(Size + other->Size);
+    DynamicArray<T>* result = new DynamicArray<T>(Size + (dynamic_cast<DynamicArray<T>*>(other))->Size);
     for (int i = 0; i < Size; i++) {
         result->Set(i, Data[i]);
     }
-    for (int i = 0; i < other->Size; i++) {
-        result->Set(i + Size, other->Data[i]);
+    for (int i = 0; i < (dynamic_cast<DynamicArray<T>*>(other))->Size; i++) {
+        result->Set(i + Size, (dynamic_cast<DynamicArray<T>*>(other))->Data[i]);
     }
     return result;
 }

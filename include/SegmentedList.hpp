@@ -2,6 +2,7 @@
 #define SEGMENTEDLIST_HPP
 
 #include "Array/DynamicArray.hpp"
+#include "Container.hpp"
 
 template <typename T>
 class Segment;
@@ -147,7 +148,7 @@ class Segment {
 };
 
 template <typename T>
-class SegmentedList : public IEnumerable<T> {
+class SegmentedList : public Container<T>, public IEnumerable<T> {
     public:
         using value_type = T;
         using iterator = SLIterator<T>;
@@ -204,16 +205,58 @@ class SegmentedList : public IEnumerable<T> {
             }
         }
 
+        T& operator[](int index) {
+            if (index >= Elements_Size || index < 0) throw std::out_of_range("Index out of range");
+            for (int i = 0; i < Segments_Size; i++) {
+                int local_size = (*Segments)[i].Array_Size;
+                if (index >= local_size) index -= local_size;
+                else return (*(*Segments)[i].Array)[index];
+            }
+        }
+        const T& operator[](int index) const {
+            if (index >= Elements_Size || index < 0) throw std::out_of_range("Index out of range");
+            for (int i = 0; i < Segments_Size; i++) {
+                int local_size = (*Segments)[i].Array_Size;
+                if (index >= local_size) index -= local_size;
+                else return (*(*Segments)[i].Array)[index];
+            }
+        }
 
-        T GetFirst() const {
+        SegmentedList& operator=(const SegmentedList& other) {
+            if (this != &other) {
+                delete Segments;
+                Segments_Size = other.Segments_Size;
+                Elements_Size = other.Elements_Size;
+                Segments = new DynamicArray<Segment<T>>(Segments_Size);
+                for (int i = 0; i < Segments_Size; i++) {
+                    (*Segments)[i] = Segment<T>((*other.Segments)[i]);
+                }
+            }
+            return *this;
+        }
+
+        SegmentedList& operator=(SegmentedList&& other) {
+            if (this != &other) {
+                delete Segments;
+                Elements_Size = other.Elements_Size;
+                Segments_Size = other.Segments_Size;
+                Segments = other.Segments;
+                other.Elements_Size = 0;
+                other.Segments_Size = 0;
+                other.Segments = nullptr;
+            }
+            return *this;
+        }
+
+        T GetFirst() const override {
             if (!Segments || Segments_Size <= 0) throw std::out_of_range("SegmentedList is empty");
             return (*Segments)[0].Array->GetFirst();
         }
-        T GetLast() const {
+        T GetLast() const override {
             if (!Segments || Segments_Size <= 0) throw std::out_of_range("SegmentedList is empty");
             return (*Segments)[Segments_Size - 1].Array->GetLast();
         }
-        T Get(int index) const {
+        T Get(int index) const override {
             if (!Segments || Segments_Size <= 0) throw std::out_of_range("SegmentedList is empty");
             if (index >= Elements_Size || index < 0) throw std::out_of_range("Index out of range");
             for (int i = 0; i < Segments_Size; i++) {
@@ -223,7 +266,7 @@ class SegmentedList : public IEnumerable<T> {
             }
         }
         
-        int GetSize() const {
+        int GetSize() const override {
             return Elements_Size;
         }
         
@@ -235,7 +278,7 @@ class SegmentedList : public IEnumerable<T> {
             Segments->Reserve(newCapacity);
         }
 
-        void Append(const T& value) {
+        void Append(const T& value) override {
             if (Segments_Size >= GetCapacity()) Reserve(Segments_Size * 2);
             if (Segments_Size > 0 && (*Segments)[Segments_Size - 1].Array_Size < MAX_SEGMENT_CAPACITY) {
                 (*Segments)[Segments_Size - 1].Array->Append(value);
@@ -252,7 +295,7 @@ class SegmentedList : public IEnumerable<T> {
             }
             Elements_Size++;
         }
-        void Append(const T&& value) {
+        void Append(const T&& value) override {
             if (Segments_Size >= GetCapacity()) Reserve(Segments_Size * 2);
             if (Segments_Size > 0 && (*Segments)[Segments_Size - 1].Array_Size < MAX_SEGMENT_CAPACITY) {
                 (*Segments)[Segments_Size - 1].Array->Append(std::move(value));
@@ -270,7 +313,7 @@ class SegmentedList : public IEnumerable<T> {
             Elements_Size++;
         }
 
-        void Prepend(const T& value) {
+        void Prepend(const T& value) override {
             if (Segments_Size >= GetCapacity()) Reserve(Segments_Size * 2);
             if (Segments_Size > 0 && (*Segments)[0].Array_Size < MAX_SEGMENT_CAPACITY) {
                 (*Segments)[0].Array->Prepend(value);
@@ -287,7 +330,7 @@ class SegmentedList : public IEnumerable<T> {
             }
             Elements_Size++;
         }
-        void Prepend(const T&& value) {
+        void Prepend(const T&& value) override {
             if (Segments_Size >= GetCapacity()) Reserve(Segments_Size * 2);
             if (Segments_Size > 0 && (*Segments)[0].Array_Size < MAX_SEGMENT_CAPACITY) {
                 (*Segments)[0].Array->Prepend(std::move(value));
@@ -305,26 +348,32 @@ class SegmentedList : public IEnumerable<T> {
             Elements_Size++;
         }
 
-        void Set(int index, const T& value) {
+        void Set(int index, const T& value) override {
             if (!Segments || Segments_Size <= 0) throw std::out_of_range("SegmentedList is empty");
             if (index >= Elements_Size || index < 0) throw std::out_of_range("Index out of range");
             for (int i = 0; i < Segments_Size; i++) {
                 int local_size = (*Segments)[i].Array_Size;
                 if (index >= local_size) index -= local_size;
-                else (*Segments)[i].Array->Set(index, value);
+                else {
+                    (*Segments)[i].Array->Set(index, value);
+                    break;
+                }
             }
         }
-        void Set(int index, const T&& value) {
+        void Set(int index, const T&& value) override {
             if (!Segments || Segments_Size <= 0) throw std::out_of_range("SegmentedList is empty");
             if (index >= Elements_Size || index < 0) throw std::out_of_range("Index out of range");
             for (int i = 0; i < Segments_Size; i++) {
                 int local_size = (*Segments)[i].Array_Size;
                 if (index >= local_size) index -= local_size;
-                else (*Segments)[i].Array->Set(index, std::move(value));
+                else {
+                    (*Segments)[i].Array->Set(index, std::move(value));
+                    break;
+                }
             }
         }
 
-        void InsertAt(int index, const T& value) {
+        void InsertAt(int index, const T& value) override {
             if (!Segments || Segments_Size < 0) throw std::out_of_range("SegmentedList is empty");
             if (index > Elements_Size || index < 0) throw std::out_of_range("Index out of range");
             if (Segments_Size >= GetCapacity()) Reserve(Segments_Size * 2);
@@ -362,7 +411,7 @@ class SegmentedList : public IEnumerable<T> {
             }
             Elements_Size++;
         } 
-        void InsertAt(int index, const T&& value) {
+        void InsertAt(int index, const T&& value) override {
             if (!Segments || Segments_Size < 0) throw std::out_of_range("SegmentedList is empty");
             if (index > Elements_Size || index < 0) throw std::out_of_range("Index out of range");
             if (Segments_Size >= GetCapacity()) Reserve(Segments_Size * 2);
@@ -401,7 +450,7 @@ class SegmentedList : public IEnumerable<T> {
             Elements_Size++;
         } 
 
-        void Resize(int size) {
+        void Resize(int size) override {
             if (size < 0) throw std::invalid_argument("Size cannot be negative");
             else if (size == 0) {
                 delete Segments;
@@ -409,22 +458,21 @@ class SegmentedList : public IEnumerable<T> {
                 Elements_Size = 0;
                 Segments = new DynamicArray<Segment<T>>();
             }
+            else if (size > Elements_Size) {
+                int temp = Elements_Size;
+                for (int i = temp; i < size; i++) {
+                    Append(T{});
+                }
+            }
             else {
-                DynamicArray<Segment<T>>* newSegments = new DynamicArray<Segment<T>>(size);
-                int i;
-                for (i = 0; i < std::min(Segments_Size, size); i++) {
-                    (*newSegments)[i] = Segment<T>((*Segments)[i]);
+                int temp = Elements_Size;
+                for (int i = size; i < temp; i++) {
+                    RemoveAt(Elements_Size - 1);
                 }
-                for (int j = i; j < Segments_Size; j++) {
-                    Elements_Size -= (*Segments)[j].Array_Size;
-                }
-                delete Segments;
-                Segments = newSegments;
-                Segments_Size = size;
             }
         }
 
-        void RemoveAt(int index) {
+        void RemoveAt(int index) override {
             if (!Segments || Segments_Size < 0) throw std::out_of_range("SegmentedList is empty");
             if (index > Elements_Size || index < 0) throw std::out_of_range("Index out of range");
             int i = 0;
@@ -446,8 +494,7 @@ class SegmentedList : public IEnumerable<T> {
             Elements_Size--;
         }
 
-        SegmentedList<T>* GetSubSegmentedListArray(int startIndex, int endIndex) {
-            if (!Segments || Elements_Size <= 0) return new SegmentedList<T>();
+        SegmentedList<T>* GetSubContainer(int startIndex, int endIndex) const override {
             if (startIndex < 0 || startIndex >= Elements_Size || endIndex > Elements_Size || startIndex > endIndex) throw std::out_of_range("Index out of range");
             int delta = endIndex - startIndex;
             T* items = new T[delta]{};
@@ -468,12 +515,12 @@ class SegmentedList : public IEnumerable<T> {
             return list;
         }
 
-        SegmentedList<T>* Concat(const SegmentedList<T>* other) {
-            if (!other || !other->Segments || other->Elements_Size <= 0) {
+        SegmentedList<T>* Concat(Container<T>* other) const override {
+            if (!dynamic_cast<SegmentedList<T>*>(other) || !(dynamic_cast<SegmentedList<T>*>(other))->Segments || (dynamic_cast<SegmentedList<T>*>(other))->Elements_Size <= 0) {
                 SegmentedList<T>* result = new SegmentedList<T>(*this);
                 return result;
             }
-            T* items = new T[Elements_Size + other->Elements_Size]{};
+            T* items = new T[Elements_Size + (dynamic_cast<SegmentedList<T>*>(other))->Elements_Size]{};
             int i = 0, j, index;
             for (j = 0, index = 0; j < Elements_Size; j++, index++) {
                 if (index > (*Segments)[i].Array_Size - 1) {
@@ -483,14 +530,14 @@ class SegmentedList : public IEnumerable<T> {
                 items[j] = (*Segments)[i].Array->Get(index);
             }
             i = 0;
-            for (index = 0; j < Elements_Size + other->Elements_Size; j++, index++) {
-                if (index > (*other->Segments)[i].Array_Size - 1) {
+            for (index = 0; j < Elements_Size + (dynamic_cast<SegmentedList<T>*>(other))->Elements_Size; j++, index++) {
+                if (index > (*(dynamic_cast<SegmentedList<T>*>(other))->Segments)[i].Array_Size - 1) {
                     index = 0;
                     i++;
                 }
-                items[j] = (*Segments)[i].Array->Get(index);
+                items[j] = (*(dynamic_cast<SegmentedList<T>*>(other))->Segments)[i].Array->Get(index);
             }
-            SegmentedList<T>* result = new SegmentedList<T>(items, Elements_Size + other->Elements_Size);
+            SegmentedList<T>* result = new SegmentedList<T>(items, Elements_Size + (dynamic_cast<SegmentedList<T>*>(other))->Elements_Size);
             delete [] items;
             return result;
         }

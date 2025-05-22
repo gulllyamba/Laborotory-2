@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include "Iterator.hpp"
+#include "Container.hpp"
 
 template <typename T>
 class AdaptiveSequence;
@@ -114,7 +115,7 @@ template <typename T>
 using AdConstIterator = AdaptIterator<T, true>;
 
 template <typename T>
-class AdaptiveSequence : public IEnumerable<T> {
+class AdaptiveSequence : public Container<T>, public IEnumerable<T> {
     public:
         using value_type = T;
         using iterator = AdIterator<T>;
@@ -175,7 +176,24 @@ class AdaptiveSequence : public IEnumerable<T> {
         }
         AdaptiveSequence(): AdaptiveSequence(nullptr, 0) {}
         AdaptiveSequence(int size): AdaptiveSequence(nullptr, size) {}
-        AdaptiveSequence(const AdaptiveSequence<T>& other) : AdaptiveSequence(other.Data, other.Size) {}
+        AdaptiveSequence(const AdaptiveSequence<T>& other) {
+            if (other.Size < 0) throw std::invalid_argument("Size cannot be negative");
+            else if (other.Size == 0) {
+                Size = 0;
+                correctLeft = 0;
+                correctRight = 1;
+                Data  = new T[correctRight]{};
+                return;
+            }
+            Size = other.Size;
+            correctLeft = Size / 2;
+            if (other.Size % 2 == 0) correctRight = Size / 2;
+            else correctRight = Size / 2 + 1;
+            Data = new T[Size * 2]{};
+            for (int i = 0; i < Size; i++) {
+                Data[i + correctLeft] = other.Get(i);
+            }
+        }
         AdaptiveSequence(AdaptiveSequence<T>&& other) noexcept {
             Data = other.Data;
             Size = other.Size;
@@ -194,24 +212,24 @@ class AdaptiveSequence : public IEnumerable<T> {
         int GetCorrectRight() const {
             return correctRight;
         }
-        T GetFirst() const {
+        T GetFirst() const override {
             if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
             return Data[correctLeft];
         }
-        T GetLast() const {
+        T GetLast() const override {
             if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
             return Data[correctLeft + Size - 1];   
         }
-        T Get(int index) const {
+        T Get(int index) const override {
             if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
             if (index >= Size || index < 0) throw std::out_of_range("Index out of range");
             return Data[correctLeft + index]; 
         }
-        int GetSize() const {
+        int GetSize() const override {
             return Size;
         }
         
-        AdaptiveSequence<T>* Append(const T& value) {
+        void Append(const T& value) override {
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 for (int i = 0; i < Size; i++) {
@@ -225,9 +243,8 @@ class AdaptiveSequence : public IEnumerable<T> {
                 correctRight--;
             }
             Size++;
-            return this;
         }
-        AdaptiveSequence<T>* Append(const T&& value) {
+        void Append(const T&& value) override {
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 for (int i = 0; i < Size; i++) {
@@ -241,10 +258,9 @@ class AdaptiveSequence : public IEnumerable<T> {
                 correctRight--;
             }
             Size++;
-            return this;
         }
 
-        AdaptiveSequence<T>* Prepend(const T& value) {
+        void Prepend(const T& value) override {
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 Data[correctLeft - 1] = value;
@@ -258,9 +274,8 @@ class AdaptiveSequence : public IEnumerable<T> {
                 correctRight--;
             }
             Size++;
-            return this;
         }
-        AdaptiveSequence<T>* Prepend(const T&& value) {
+        void Prepend(const T&& value) override {
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
                 Data[correctLeft - 1] = std::move(value);
@@ -274,23 +289,20 @@ class AdaptiveSequence : public IEnumerable<T> {
                 correctRight--;
             }
             Size++;
-            return this;
         }
 
-        AdaptiveSequence<T>* Set(int index, const T& value) {
+        void Set(int index, const T& value) override {
             if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
             if (index >= Size || index < 0) throw std::out_of_range("Index out of range");
             Data[correctLeft + index] = value;
-            return this;
         }
-        AdaptiveSequence<T>* Set(int index, const T&& value) {
+        void Set(int index, const T&& value) override {
             if (!Data || Size <= 0) throw std::out_of_range("Array is empty");
             if (index >= Size || index < 0) throw std::out_of_range("Index out of range");
             Data[correctLeft + index] = std::move(value);
-            return this;
         }
 
-        AdaptiveSequence<T>* InsertAt(int index, const T& value) {
+        void InsertAt(int index, const T& value) override {
             if (index < 0 || index > Size) throw std::out_of_range("Index out of range");
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
@@ -308,9 +320,8 @@ class AdaptiveSequence : public IEnumerable<T> {
                 correctRight--;
             }
             Size++;
-            return this;
         }
-        AdaptiveSequence<T>* InsertAt(int index, const T&& value) {
+        void InsertAt(int index, const T&& value) override {
             if (index < 0 || index > Size) throw std::out_of_range("Index out of range");
             if (correctRight == 0 && correctLeft == 0) Resize(Size);
             if (correctLeft >= correctRight) {
@@ -328,10 +339,9 @@ class AdaptiveSequence : public IEnumerable<T> {
                 correctRight--;
             }
             Size++;
-            return this;
         }
 
-        AdaptiveSequence<T>* Resize(int size) {
+        void Resize(int size) override {
             if (size < 0) throw std::invalid_argument("Size cannot be negative");
             else if (size == 0) {
                 delete [] Data;
@@ -367,13 +377,11 @@ class AdaptiveSequence : public IEnumerable<T> {
                 correctLeft = new_correctLeft;
                 correctRight = new_correctRight;
             }
-            return this;
         }
 
-        AdaptiveSequence<T>* RemoveAt(int index) {
+        void RemoveAt(int index) override {
             if (index < 0 || index >= Size) throw std::out_of_range("Index out of range");
             if (Size == 0) throw std::invalid_argument("Array is empty");
-            if (correctLeft == 0 && correctRight == 0) Resize(Size);
             if (correctRight > correctLeft) {
                 for (int i = index; i > 0; i--) {
                     Data[correctLeft + i] = Data[correctLeft + i - 1];
@@ -389,7 +397,6 @@ class AdaptiveSequence : public IEnumerable<T> {
                 correctRight++;
             }
             Size--;
-            return this;
         }
         
         std::string toString(bool flag) const {
@@ -425,6 +432,7 @@ class AdaptiveSequence : public IEnumerable<T> {
                 oss << Data[0];
                 for (int i = 1; i < correctLeft; i++) oss << ", " << Data[i];
                 for (int i = 0; i < correctRight; i++) {
+                    if (correctLeft == 0 && correctRight == 1) break;
                     oss << ", " << Data[correctLeft + Size + i];
                 }
             }
@@ -432,7 +440,8 @@ class AdaptiveSequence : public IEnumerable<T> {
             return oss.str();
         }
 
-        AdaptiveSequence<T>* GetSubSequence(int startIndex, int endIndex) const {
+        AdaptiveSequence<T>* GetSubContainer(int startIndex, int endIndex) const override {
+            if (startIndex < 0 || startIndex >= Size || endIndex > Size || startIndex > endIndex) throw std::out_of_range("Index out of range");
             AdaptiveSequence<T>* result = new AdaptiveSequence<T>(endIndex - startIndex);
             for (int i = startIndex; i < endIndex; i++) {
                 result->Data[result->correctLeft + i - startIndex] = Get(i);
@@ -440,13 +449,13 @@ class AdaptiveSequence : public IEnumerable<T> {
             return result;
         }
 
-        AdaptiveSequence<T>* Concat(AdaptiveSequence<T>* other) const {
-            AdaptiveSequence<T>* result = new AdaptiveSequence<T>(this->Size + other->Size);
+        AdaptiveSequence<T>* Concat(Container<T>* other) const override {
+            AdaptiveSequence<T>* result = new AdaptiveSequence<T>(this->Size + (dynamic_cast<AdaptiveSequence<T>*>(other))->Size);
             for (int i = 0; i < this->Size; i++) {
                 result->Data[result->correctLeft + i] = this->Get(i);
             }
-            for (int i = 0; i < other->Size; i++) {
-                result->Data[result->correctLeft + this->Size + i] = other->Get(i);
+            for (int i = 0; i < (dynamic_cast<AdaptiveSequence<T>*>(other))->Size; i++) {
+                result->Data[result->correctLeft + this->Size + i] = (dynamic_cast<AdaptiveSequence<T>*>(other))->Get(i);
             }
             return result;
         }   

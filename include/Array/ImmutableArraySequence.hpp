@@ -17,7 +17,7 @@ class ImmutableArraySequence : virtual public ArraySequence<T>, virtual public I
 
         ImmutableArraySequence<T>& operator=(const ImmutableArraySequence<T>& other) {
             if (this == &other) return *this;
-            if (this->array) delete this->array;
+            delete this->array;
             this->array = new DynamicArray<T>(*other.array);
             return *this;
         }
@@ -61,7 +61,7 @@ class ImmutableArraySequence : virtual public ArraySequence<T>, virtual public I
         }
 
         ImmutableArraySequence<T>* GetSubSequence(int startIndex, int endIndex) const override {
-            DynamicArray<T>* temp_arr = this->array->GetSubDynamicArray(startIndex, endIndex);
+            DynamicArray<T>* temp_arr = this->array->GetSubContainer(startIndex, endIndex);
             ImmutableArraySequence<T>* temp = (const_cast<ImmutableArraySequence<T>*>(this))->Instance();
             temp->array = temp_arr;
             return temp;

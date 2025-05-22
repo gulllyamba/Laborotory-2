@@ -61,7 +61,7 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
         }
 
         MutableArraySequence<T>* GetSubSequence(int startIndex, int endIndex) const override {
-            DynamicArray<T>* temp_arr = (const_cast<MutableArraySequence<T>*>(this))->Instance()->array->GetSubDynamicArray(startIndex, endIndex);
+            DynamicArray<T>* temp_arr = (const_cast<MutableArraySequence<T>*>(this))->Instance()->array->GetSubContainer(startIndex, endIndex);
             MutableArraySequence<T>* temp = new MutableArraySequence<T>(*temp_arr);
             delete temp_arr;
             return temp;

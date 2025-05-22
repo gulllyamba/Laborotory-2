@@ -8,6 +8,7 @@
 #include <sstream>
 #include <memory>
 #include "../Iterator.hpp"
+#include "../Container.hpp"
 
 template <typename T>
 class LinkedList;
@@ -112,7 +113,7 @@ template <typename T>
 using LConstIterator = ListIterator<T, true>;
 
 template <typename T>
-class LinkedList : public IEnumerable<T> {
+class LinkedList : public Container<T>, public IEnumerable<T> {
     public:
         using value_type = T;
         using iterator = LIterator<T>;
@@ -148,26 +149,26 @@ class LinkedList : public IEnumerable<T> {
         LinkedList();
         LinkedList(int size);
         LinkedList(const LinkedList<T>& other);
-        LinkedList(const LinkedList<T>&& other) noexcept;
+        LinkedList(LinkedList<T>&& other) noexcept;
 
-        T GetFirst() const;
-        T GetLast() const;
-        T Get(int index) const;
-        int GetSize() const;
+        T GetFirst() const override;
+        T GetLast() const override;
+        T Get(int index) const override;
+        int GetSize() const override;
 
-        void Append(const T& value) noexcept;
-        void Append(const T&& value) noexcept;
-        void Prepend(const T& value) noexcept;
-        void Prepend(const T&& value) noexcept;
-        void Set(int index, const T& value);
-        void Set(int index, const T&& value);
-        void InsertAt(int index, const T& value);
-        void InsertAt(int index, const T&& value);
-        void Resize(int size);
-        void RemoveAt(int index);
+        void Append(const T& value) override;
+        void Append(const T&& value) override;
+        void Prepend(const T& value) override;
+        void Prepend(const T&& value) override;
+        void Set(int index, const T& value) override;
+        void Set(int index, const T&& value) override;
+        void InsertAt(int index, const T& value) override;
+        void InsertAt(int index, const T&& value) override;
+        void Resize(int size) override;
+        void RemoveAt(int index) override;
 
-        LinkedList<T>* GetSubList(int startIndex, int endIndex) const;
-        LinkedList<T>* Concat(LinkedList<T> *other) const;
+        LinkedList<T>* GetSubContainer(int startIndex, int endIndex) const override;
+        LinkedList<T>* Concat(Container<T>* other) const override;
 
         std::string toString() const noexcept;
 
@@ -222,7 +223,7 @@ class LinkedList : public IEnumerable<T> {
             }
             return *this;
         }
-        LinkedList<T>& operator=(const LinkedList<T>&& other) noexcept {
+        LinkedList<T>& operator=(LinkedList<T>&& other) noexcept {
             if (this == &other) return *this;
             Delete();
             if (other.Head && other.Size > 0) {
@@ -317,7 +318,7 @@ LinkedList<T>::LinkedList(const LinkedList<T>& other) : Head(nullptr), Last(null
 }
 
 template <typename T>
-LinkedList<T>::LinkedList(const LinkedList<T>&& other) noexcept : Head(other.Head), Last(other.Last), Size(other.Size) {
+LinkedList<T>::LinkedList(LinkedList<T>&& other) noexcept : Head(other.Head), Last(other.Last), Size(other.Size) {
     other.Head = nullptr;
     other.Last = nullptr;
     other.Size = 0;
@@ -361,7 +362,7 @@ int LinkedList<T>::GetSize() const {
 }
 
 template <typename T>
-void LinkedList<T>::Append(const T& value) noexcept {
+void LinkedList<T>::Append(const T& value) {
     TNode<T>* new_Node = new TNode<T>(value);
     if (!Head) {
         Head = new_Node;
@@ -376,7 +377,7 @@ void LinkedList<T>::Append(const T& value) noexcept {
 }
 
 template <typename T>
-void LinkedList<T>::Append(const T&& value) noexcept {
+void LinkedList<T>::Append(const T&& value) {
     TNode<T>* new_Node = new TNode<T>(std::move(value));
     if (!Head) {
         Head = new_Node;
@@ -391,7 +392,7 @@ void LinkedList<T>::Append(const T&& value) noexcept {
 }
 
 template <typename T>
-void LinkedList<T>::Prepend(const T& value) noexcept {
+void LinkedList<T>::Prepend(const T& value) {
     TNode<T>* new_Node = new TNode<T>(value);
     if (Head == nullptr) {
         Head = new_Node;
@@ -406,7 +407,7 @@ void LinkedList<T>::Prepend(const T& value) noexcept {
 }
 
 template <typename T>
-void LinkedList<T>::Prepend(const T&& value) noexcept {
+void LinkedList<T>::Prepend(const T&& value) {
     TNode<T>* new_Node = new TNode<T>(std::move(value));
     if (Head == nullptr) {
         Head = new_Node;
@@ -592,10 +593,9 @@ void LinkedList<T>::RemoveAt(int index) {
 }
 
 template <typename T>
-LinkedList<T>* LinkedList<T>::GetSubList(int startIndex, int endIndex) const {
-    LinkedList<T>* list = new LinkedList<T>();
-    if (!Head || !Last || Size <= 0) return list;
+LinkedList<T>* LinkedList<T>::GetSubContainer(int startIndex, int endIndex) const {
     if (startIndex < 0 || startIndex >= Size || endIndex > Size || startIndex > endIndex) throw std::out_of_range("Index out of range");
+    LinkedList<T>* list = new LinkedList<T>();
     TNode<T>* Actual_Node = nullptr;
     if (startIndex >= Size / 2) {
         Actual_Node = Last;
@@ -617,20 +617,32 @@ LinkedList<T>* LinkedList<T>::GetSubList(int startIndex, int endIndex) const {
 }
 
 template <typename T>
-LinkedList<T>* LinkedList<T>::Concat(LinkedList<T> *other) const {
+LinkedList<T>* LinkedList<T>::Concat(Container<T>* other) const {
     LinkedList<T>* result = new LinkedList<T>(*this);
-    if (!other || !other->Head || !other->Last || other->Size <= 0) return result;
-    TNode<T>* Actual_Node = other->Head;
-    result->Last->Next_Node = new TNode<T>(Actual_Node->Value);
-    result->Last->Next_Node->Prev_Node = result->Last;
-    result->Last = result->Last->Next_Node;
-    for (int i = 1; i < other->Size; i++) {
-        Actual_Node = Actual_Node->Next_Node;
+    if (!dynamic_cast<LinkedList<T>*>(other) || !(dynamic_cast<LinkedList<T>*>(other))->Head || !(dynamic_cast<LinkedList<T>*>(other))->Last || (dynamic_cast<LinkedList<T>*>(other))->Size <= 0) return result;
+    TNode<T>* Actual_Node = (dynamic_cast<LinkedList<T>*>(other))->Head;
+    if (result->Size == 0) {
+        result->Head = new TNode<T>(Actual_Node->Value);
+        result->Last = result->Head;
+        for (int i = 1; i < (dynamic_cast<LinkedList<T>*>(other))->Size; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+            result->Last->Next_Node = new TNode<T>(Actual_Node->Value);
+            result->Last->Next_Node->Prev_Node = result->Last;
+            result->Last = result->Last->Next_Node;
+        }
+    }
+    else {
         result->Last->Next_Node = new TNode<T>(Actual_Node->Value);
         result->Last->Next_Node->Prev_Node = result->Last;
         result->Last = result->Last->Next_Node;
+        for (int i = 1; i < (dynamic_cast<LinkedList<T>*>(other))->Size; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+            result->Last->Next_Node = new TNode<T>(Actual_Node->Value);
+            result->Last->Next_Node->Prev_Node = result->Last;
+            result->Last = result->Last->Next_Node;
+        }
     }
-    result->Size += other->Size;
+    result->Size += (dynamic_cast<LinkedList<T>*>(other))->Size;
     return result;
 }
 

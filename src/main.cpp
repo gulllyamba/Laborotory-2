@@ -1,8 +1,8 @@
-#include "Array/MutableArraySequence.hpp"
-#include "Array/ImmutableArraySequence.hpp"
-#include "List/MutableListSequence.hpp"
-#include "AdaptiveSequence.hpp"
-#include "SegmentedList.hpp"
+#include "../include/Array/MutableArraySequence.hpp"
+#include "../include/Array/ImmutableArraySequence.hpp"
+#include "../include/List/MutableListSequence.hpp"
+#include "../include/AdaptiveSequence.hpp"
+#include "../include/SegmentedList.hpp"
 #include <cmath>
 
 template <typename T>
@@ -33,119 +33,153 @@ std::string toString(const ImmutableArraySequence<T>& array) {
 int main() {
     // SEGMENTED LIST
 
-    // int items[] = {1, 2, 3, 4, 5};
-    // SegmentedList<int>* A = new SegmentedList<int>(items, 5);
-    // SegmentedList<int>* B = new SegmentedList<int>(items, 5);
-    // SegmentedList<int>* C = new SegmentedList<int>();
-    // SegmentedList<int>* D = new SegmentedList<int>();
-    // SegmentedList<int>* E = new SegmentedList<int>(items, 5);
-    // SegmentedList<int>* F = new SegmentedList<int>(items, 5);
+    int items[] = {1, 2, 3, 4, 5};
+    SegmentedList<int>* A = new SegmentedList<int>(items, 5);
+    SegmentedList<int>* B = new SegmentedList<int>(items, 5);
+    SegmentedList<int>* C = new SegmentedList<int>();
+    SegmentedList<int>* D = new SegmentedList<int>();
+    SegmentedList<int>* E = new SegmentedList<int>(items, 5);
+    SegmentedList<int>* F = new SegmentedList<int>(items, 5);
 
-    // std::cout << "Iterator cout:\n";
-    // for (SLIterator<int> it = A->begin(); it != A->end(); ++it) {
-    //     std::cout << *it << " ";
-    // }
-    // std::cout << "\n\n";
+    std::cout << "Iterator cout:\n";
+    for (SLIterator<int> it = A->begin(); it != A->end(); ++it) {
+        std::cout << *it << " ";
+    }
+    std::cout << "\n\n";
 
-    // std::cout << "Работа с Size = 0:\n";
-    // C->Append(1);
-    // std::cout << C->toString_Segments() << "\t" << C->GetSize() << "\n"; 
-    // D->Prepend(5);
-    // std::cout << D->toString_Segments() << "\t" << D->GetSize() << "\n\n"; 
+    std::cout << "Работа с Size = 0:\n";
+    C->Append(1);
+    std::cout << C->toString_Segments() << "\t" << C->GetSize() << "\n"; 
+    D->Prepend(5);
+    std::cout << D->toString_Segments() << "\t" << D->GetSize() << "\n\n"; 
 
-    // std::cout << "Append:\n";
-    // std::cout << A->toString_Segments() << "\t" << A->GetSize() << "\n";
-    // for (int i = 0; i < 16; i++) {
-    //     A->Append(i);
-    //     std::cout << A->toString_Segments() << "\t" << A->GetSize() << " " << A->GetCapacity() << "\n";
-    // }
-    // for (int i = 0; i < A->GetSize(); i++) {
-    //     std::cout << A->Get(i) << " ";
-    // }
-    // std::cout << "\n\n";
+    std::cout << "Append:\n";
+    std::cout << A->toString_Segments() << "\t" << A->GetSize() << "\n";
+    for (int i = 0; i < 16; i++) {
+        A->Append(i);
+        std::cout << A->toString_Segments() << "\t" << A->GetSize() << " " << A->GetCapacity() << "\n";
+    }
+    for (int i = 0; i < A->GetSize(); i++) {
+        std::cout << A->Get(i) << " ";
+    }
+    std::cout << "\n\n";
 
-    // std::cout << "Prepend:\n";
-    // std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
-    // for (int i = 0; i < 16; i++) {
-    //     B->Prepend(i);
-    //     std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
-    // }
-    // for (int i = 0; i < B->GetSize(); i++) {
-    //     std::cout << B->Get(i) << " ";
-    // }
-    // std::cout << "\n\n";
+    std::cout << "Prepend:\n";
+    std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
+    for (int i = 0; i < 16; i++) {
+        B->Prepend(i);
+        std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
+    }
+    for (int i = 0; i < B->GetSize(); i++) {
+        std::cout << B->Get(i) << " ";
+    }
+    std::cout << "\n\n";
 
-    // std::cout << "Set:\n";
-    // for (int i = 0; i < E->GetSize(); i++) {
-    //     E->Set(i, i * 10);
-    // }
-    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    // std::cout << "\n";
+    std::cout << "Set:\n";
+    for (int i = 0; i < E->GetSize(); i++) {
+        E->Set(i, i * 10);
+    }
+    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    std::cout << "\n";
 
-    // std::cout << "InsertAt:\n";
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    // F->InsertAt(F->GetSize(), -10);
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    // F->InsertAt(F->GetSize(), -9);
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    // F->InsertAt(F->GetSize(), -8);
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    // F->InsertAt(F->GetSize(), -7);
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    // F->InsertAt(F->GetSize(), -6);
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    // F->InsertAt(0, -5);
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    std::cout << "InsertAt:\n";
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    F->InsertAt(F->GetSize(), -10);
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    F->InsertAt(F->GetSize(), -9);
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    F->InsertAt(F->GetSize(), -8);
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    F->InsertAt(F->GetSize(), -7);
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    F->InsertAt(F->GetSize(), -6);
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    F->InsertAt(0, -5);
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
 
-    // std::cout << "\n";
-    // std::cout << "Resize:\n";
-    // F->Resize(5);
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    // F->Resize(2);
-    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    std::cout << "\n";
+    std::cout << "Resize:\n";
+    F->Resize(5);
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    F->Resize(2);
+    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
 
-    // std::cout << "\n";
-    // std::cout << "RemoveAt:\n";
-    // int E_size = E->GetSize();
-    // for (int i = 0; i < E_size; i++) {
-    //     E->RemoveAt(0);
-    //     std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    // }
+    std::cout << "\n";
+    std::cout << "RemoveAt:\n";
+    int E_size = E->GetSize();
+    for (int i = 0; i < E_size; i++) {
+        E->RemoveAt(0);
+        std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    }
 
-    // std::cout << "\n";
-    // std::cout << "Работа с Size = 0:\n";
-    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    // E->Append(1);
-    // std::cout << "Append: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    // E->RemoveAt(0);
-    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    // E->Prepend(9);
-    // std::cout << "Prepend: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    // E->RemoveAt(0);
-    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    // E->InsertAt(0, 1);
-    // std::cout << "InsertAt: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    // E->InsertAt(1, 2);
-    // std::cout << "InsertAt: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    std::cout << "\n";
+    std::cout << "Работа с Size = 0:\n";
+    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    E->Append(1);
+    std::cout << "Append: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    E->RemoveAt(0);
+    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    E->Prepend(9);
+    std::cout << "Prepend: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    E->RemoveAt(0);
+    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    E->InsertAt(0, 1);
+    std::cout << "InsertAt: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    E->InsertAt(1, 2);
+    std::cout << "InsertAt: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
 
-    // std::cout << "\n";
-    // std::cout << "GetSubSegmentedList:\n";
-    // SegmentedList<int>* G = A->GetSubSegmentedListArray(3, 14);
-    // std::cout << G->toString_Segments() << "\t" << G->GetSize() << "\n";
+    std::cout << "\n";
+    std::cout << "GetSubSegmentedList:\n";
+    SegmentedList<int>* G = A->GetSubSegmentedListArray(3, 14);
+    std::cout << G->toString_Segments() << "\t" << G->GetSize() << "\n";
 
-    // std::cout << "\n";
-    // std::cout << "Concat:\n";
-    // SegmentedList<int>* H = F->Concat(F);
-    // std::cout << H->toString_Segments() << "\t" << H->GetSize() << "\n";
+    std::cout << "\n";
+    std::cout << "Concat:\n";
+    SegmentedList<int>* zero = new SegmentedList<int>();
+    SegmentedList<int>* H = zero->Concat(F);
+    std::cout << H->toString_Segments() << "\t" << H->GetSize() << "\n\n";
 
-    // delete A;
-    // delete B;
-    // delete C;
-    // delete D;
-    // delete E;
-    // delete F;
-    // delete G;
-    // delete H;
+    double pupupu[] = {1.1, 2.2, 3.3};
+    SegmentedList<double> temp1(pupupu, 3);
+    SegmentedList<double> temp2(pupupu, 3);
+    SegmentedList<double> temp3(pupupu, 3);
+    SegmentedList<double> pupupu_x3[] = {temp1, temp2, temp3};
+    SegmentedList<SegmentedList<double>>* BBB = new SegmentedList<SegmentedList<double>>(pupupu_x3, 3);
+    SegmentedList<SegmentedList<double>> array[] = {*BBB, *BBB, *BBB};
+    SegmentedList<SegmentedList<SegmentedList<double>>>* I = new SegmentedList<SegmentedList<SegmentedList<double>>>(array, 3);
+    std::cout << "Вложенные SegmentedList: [";
+    for (int i = 0; i < I->GetSize(); i++) {
+        for (int j = 0; j < BBB->GetSize(); j++) {
+            std::cout << ((*I)[i])[j].toString_Segments() << " ";
+        }
+    }
+    std::cout << "]\n\n";
+
+    std::cout << "Вложенный vector:\n";
+    std::vector<int> temp11 = {1, 2, 3};
+    std::vector<int> temp22 = {4, 5, 6};
+    std::vector<int> temp33 = {7, 8, 9};
+    std::vector<int> items_10[] = {temp11, temp22, temp33};
+    SegmentedList<std::vector<int>>* J = new SegmentedList<std::vector<int>>(items_10, 3);
+    for (int i = 0; i < J->GetSize(); i++) {
+        for (int j = 0; j < 3; j++) {
+            std::cout << (*J)[i][j] << " ";
+        }
+        std::cout << "\n";
+    }
+
+    delete BBB;
+    delete I;
+    delete J;
+
+    delete A;
+    delete B;
+    delete C;
+    delete D;
+    delete E;
+    delete F;
+    delete G;
+    delete H;
 
     ////////////////////////////////////////////////////////////////////////////
     // ADAPTIVE SEQUENCE
@@ -188,7 +222,7 @@ int main() {
     // }
 
     // std::cout << "\n";
-    // std::cout << "SET:\n";
+    // std::cout << "Set:\n";
     // AdaptiveSequence<int>* C = new AdaptiveSequence<int>(items, 5);
     // std::cout << "C: " << C->toString(0) << "\t" << C->toString(1) << "\t" << C->GetCorrectLeft() << " " << C->GetCorrectRight() << "\n";
     // int C_size = C->GetSize();
@@ -312,7 +346,46 @@ int main() {
     // auto& second = std::get<1>(*res);
     // auto& third = std::get<2>(*res);
 
-    // std::cout << "\nUnZip: (" << first.toString(0) << ", " << second.toString(0) << ", " << third.toString(0) << ")\n";
+    // std::cout << "\nUnZip: (" << first.toString(0) << ", " << second.toString(0) << ", " << third.toString(0) << ")\n\n";
+
+    // double pupupu[] = {1.1, 2.2, 3.3};
+    // AdaptiveSequence<double> temp1(pupupu, 3);
+    // AdaptiveSequence<double> temp2(pupupu, 3);
+    // AdaptiveSequence<double> temp3(pupupu, 3);
+    // AdaptiveSequence<double> pupupu_x3[3];
+    // pupupu_x3[0] = temp1;
+    // pupupu_x3[1] = temp2;
+    // pupupu_x3[2] = temp3;
+    // AdaptiveSequence<AdaptiveSequence<double>>* BBB = new AdaptiveSequence<AdaptiveSequence<double>>(pupupu_x3, 3);
+    // AdaptiveSequence<AdaptiveSequence<double>> array[3];
+    // array[0] = *BBB;
+    // array[1] = *BBB;
+    // array[2] = *BBB;
+    // AdaptiveSequence<AdaptiveSequence<AdaptiveSequence<double>>>* L = new AdaptiveSequence<AdaptiveSequence<AdaptiveSequence<double>>>(array, 3);
+    // std::cout << "Вложенные AdaptiveSequence: [";
+    // for (int i = 0; i < L->GetSize(); i++) {
+    //     for (int j = 0; j < BBB->GetSize(); j++) {
+    //         std::cout << ((*L)[i])[j].toString(1) << " ";
+    //     }
+    // }
+    // std::cout << "]\n\n";
+
+    // std::cout << "Вложенный vector:\n";
+    // std::vector<int> temp11 = {1, 2, 3};
+    // std::vector<int> temp22 = {4, 5, 6};
+    // std::vector<int> temp33 = {7, 8, 9};
+    // std::vector<int> items_10[] = {temp11, temp22, temp33};
+    // AdaptiveSequence<std::vector<int>>* H = new AdaptiveSequence<std::vector<int>>(items_10, 3);
+    // for (int i = 0; i < H->GetSize(); i++) {
+    //     for (int j = 0; j < 3; j++) {
+    //         std::cout << (*H)[i][j] << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
+
+    // delete BBB;
+    // delete L;
+    // delete H;
 
     // delete A;
     // delete B;
@@ -394,13 +467,10 @@ int main() {
     // std::cout << toString(a3) << "\t" << a3->GetCapacity() << "\n";
     // ImmutableArraySequence<int>* a4 = a3->InsertAt(1, 2);
     // std::cout << toString(a4) << "\t" << a4->GetCapacity() << "\n";
-    // delete a1;
-    // delete a2;
-    // delete a3;
-    // delete a4;
-    // delete Resize_x2;
 
-    // ImmutableArraySequence<int>* Reserve = A->Reserve(5);
+    // std::cout << "\n";
+
+    // ImmutableArraySequence<int>* Reserve = A->Reserve(7);
     // std::cout << "Reserve: " << toString(Reserve) << "\t" << Reserve->GetCapacity() << "\n";
     // std::cout << "\n";
 
@@ -475,7 +545,40 @@ int main() {
     // ImmutableArraySequence<int> second = std::get<1>(*res);
     // ImmutableArraySequence<int> third = std::get<2>(*res);
 
-    // std::cout << "UnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n";
+    // std::cout << "UnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n\n";
+
+    // double pupupu[] = {1.1, 2.2, 3.3};
+    // ImmutableArraySequence<double> temp1(pupupu, 3);
+    // ImmutableArraySequence<double> temp2(pupupu, 3);
+    // ImmutableArraySequence<double> temp3(pupupu, 3);
+    // ImmutableArraySequence<double> pupupu_x3[] = {temp1, temp2, temp3};
+    // ImmutableArraySequence<ImmutableArraySequence<double>>* BBB = new ImmutableArraySequence<ImmutableArraySequence<double>>(pupupu_x3, 3);
+    // ImmutableArraySequence<ImmutableArraySequence<double>> array[] = {*BBB, *BBB, *BBB};
+    // ImmutableArraySequence<ImmutableArraySequence<ImmutableArraySequence<double>>>* E = new ImmutableArraySequence<ImmutableArraySequence<ImmutableArraySequence<double>>>(array, 3);
+    // std::cout << "Вложенные ImmutableArraySequence: [";
+    // for (int i = 0; i < E->GetSize(); i++) {
+    //     for (int j = 0; j < BBB->GetSize(); j++) {
+    //         std::cout << toString(((*E)[i])[j]) << " ";
+    //     }
+    // }
+    // std::cout << "]\n\n";
+
+    // std::cout << "Вложенный vector:\n";
+    // std::vector<int> temp11 = {1, 2, 3};
+    // std::vector<int> temp22 = {4, 5, 6};
+    // std::vector<int> temp33 = {7, 8, 9};
+    // std::vector<int> items_10[] = {temp11, temp22, temp33};
+    // ImmutableArraySequence<std::vector<int>>* H = new ImmutableArraySequence<std::vector<int>>(items_10, 3);
+    // for (int i = 0; i < H->GetSize(); i++) {
+    //     for (int j = 0; j < 3; j++) {
+    //         std::cout << (*H)[i][j] << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
+
+    // delete BBB;
+    // delete E;
+    // delete H;
 
     
     // delete A;
@@ -498,6 +601,11 @@ int main() {
     // delete G;
     // delete C;
     // delete D;
+    // delete a1;
+    // delete a2;
+    // delete a3;
+    // delete a4;
+    // delete Resize_x2;
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -641,8 +749,40 @@ int main() {
     // auto& second = std::get<1>(*res);
     // auto& third = std::get<2>(*res);
 
-    // std::cout << "UnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n";
+    // std::cout << "UnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n\n";
 
+    // double pupupu[] = {1.1, 2.2, 3.3};
+    // MutableArraySequence<double> temp1(pupupu, 3);
+    // MutableArraySequence<double> temp2(pupupu, 3);
+    // MutableArraySequence<double> temp3(pupupu, 3);
+    // MutableArraySequence<double> pupupu_x3[] = {temp1, temp2, temp3};
+    // MutableArraySequence<MutableArraySequence<double>>* BBB = new MutableArraySequence<MutableArraySequence<double>>(pupupu_x3, 3);
+    // MutableArraySequence<MutableArraySequence<double>> array[] = {*BBB, *BBB, *BBB};
+    // MutableArraySequence<MutableArraySequence<MutableArraySequence<double>>>* E = new MutableArraySequence<MutableArraySequence<MutableArraySequence<double>>>(array, 3);
+    // std::cout << "Вложенные MutableArraySequence: [";
+    // for (int i = 0; i < E->GetSize(); i++) {
+    //     for (int j = 0; j < BBB->GetSize(); j++) {
+    //         std::cout << toString(((*E)[i])[j]) << " ";
+    //     }
+    // }
+    // std::cout << "]\n\n";
+
+    // std::cout << "Вложенный vector:\n";
+    // std::vector<int> temp11 = {1, 2, 3};
+    // std::vector<int> temp22 = {4, 5, 6};
+    // std::vector<int> temp33 = {7, 8, 9};
+    // std::vector<int> items_10[] = {temp11, temp22, temp33};
+    // MutableArraySequence<std::vector<int>>* H = new MutableArraySequence<std::vector<int>>(items_10, 3);
+    // for (int i = 0; i < H->GetSize(); i++) {
+    //     for (int j = 0; j < 3; j++) {
+    //         std::cout << (*H)[i][j] << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
+
+    // delete BBB;
+    // delete E;
+    // delete H;
     
     // delete A;
     // delete con;
@@ -794,7 +934,40 @@ int main() {
     // auto& second = std::get<1>(*res);
     // auto& third = std::get<2>(*res);
 
-    // std::cout << "\nUnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n";
+    // std::cout << "\nUnZip: (" << toString(first) << " " << toString(second) << " " << toString(third) << ")\n\n";
+
+    // double pupupu[] = {1.1, 2.2, 3.3};
+    // MutableListSequence<double> temp1(pupupu, 3);
+    // MutableListSequence<double> temp2(pupupu, 3);
+    // MutableListSequence<double> temp3(pupupu, 3);
+    // MutableListSequence<double> pupupu_x3[] = {temp1, temp2, temp3};
+    // MutableListSequence<MutableListSequence<double>>* BBB = new MutableListSequence<MutableListSequence<double>>(pupupu_x3, 3);
+    // MutableListSequence<MutableListSequence<double>> array[] = {*BBB, *BBB, *BBB};
+    // MutableListSequence<MutableListSequence<MutableListSequence<double>>>* E = new MutableListSequence<MutableListSequence<MutableListSequence<double>>>(array, 3);
+    // std::cout << "Вложенные MutableListSequence: [";
+    // for (int i = 0; i < E->GetSize(); i++) {
+    //     for (int j = 0; j < BBB->GetSize(); j++) {
+    //         std::cout << toString(((*E)[i])[j]) << " ";
+    //     }
+    // }
+    // std::cout << "]\n\n";
+
+    // std::cout << "Вложенный vector:\n";
+    // std::vector<int> temp11 = {1, 2, 3};
+    // std::vector<int> temp22 = {4, 5, 6};
+    // std::vector<int> temp33 = {7, 8, 9};
+    // std::vector<int> items_10[] = {temp11, temp22, temp33};
+    // MutableListSequence<std::vector<int>>* H = new MutableListSequence<std::vector<int>>(items_10, 3);
+    // for (int i = 0; i < H->GetSize(); i++) {
+    //     for (int j = 0; j < 3; j++) {
+    //         std::cout << (*H)[i][j] << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
+
+    // delete BBB;
+    // delete E;
+    // delete H;
 
     // delete A;
     // delete con;
@@ -958,7 +1131,40 @@ int main() {
     // auto& second = std::get<1>(*res);
     // auto& third = std::get<2>(*res);
 
-    // std::cout << "\nUnZip: (" << first.toString() << " " << second.toString() << " " << third.toString() << ")\n";
+    // std::cout << "\nUnZip: (" << first.toString() << " " << second.toString() << " " << third.toString() << ")\n\n";
+
+    // double pupupu[] = {1.1, 2.2, 3.3};
+    // DynamicArray<double> temp1(pupupu, 3);
+    // DynamicArray<double> temp2(pupupu, 3);
+    // DynamicArray<double> temp3(pupupu, 3);
+    // DynamicArray<double> pupupu_x3[] = {temp1, temp2, temp3};
+    // DynamicArray<DynamicArray<double>>* BBB = new DynamicArray<DynamicArray<double>>(pupupu_x3, 3);
+    // DynamicArray<DynamicArray<double>> array[] = {*BBB, *BBB, *BBB};
+    // DynamicArray<DynamicArray<DynamicArray<double>>>* E = new DynamicArray<DynamicArray<DynamicArray<double>>>(array, 3);
+    // std::cout << "Вложенные DynamicArray: [";
+    // for (int i = 0; i < E->GetSize(); i++) {
+    //     for (int j = 0; j < BBB->GetSize(); j++) {
+    //         std::cout << (((*E)[i])[j]).toString() << " ";
+    //     }
+    // }
+    // std::cout << "]\n\n";
+
+    // std::cout << "Вложенный vector:\n";
+    // std::vector<int> temp11 = {1, 2, 3};
+    // std::vector<int> temp22 = {4, 5, 6};
+    // std::vector<int> temp33 = {7, 8, 9};
+    // std::vector<int> items_10[] = {temp11, temp22, temp33};
+    // DynamicArray<std::vector<int>>* G = new DynamicArray<std::vector<int>>(items_10, 3);
+    // for (int i = 0; i < G->GetSize(); i++) {
+    //     for (int j = 0; j < 3; j++) {
+    //         std::cout << (*G)[i][j] << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
+
+    // delete BBB;
+    // delete E;
+    // delete G;
 
     // delete A;
     // delete con;
