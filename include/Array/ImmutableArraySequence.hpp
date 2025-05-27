@@ -34,9 +34,6 @@ class ImmutableArraySequence : virtual public ArraySequence<T>, virtual public I
         int GetSize() const override {
             return this->array->GetSize();
         }
-        int GetCapacity() const override{
-            return this->array->GetCapacity();
-        }
 
         ImmutableArraySequence<T>* Reserve(int newCapacity) const {
             return dynamic_cast<ImmutableArraySequence<T>*>((const_cast<ImmutableArraySequence<T>*>(this))->Instance()->ReserveInternal(newCapacity));

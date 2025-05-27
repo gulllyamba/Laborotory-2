@@ -22,6 +22,7 @@ class Container {
 
         virtual Container<T>* GetSubContainer(int startIndex, int endIndex) const = 0;
         virtual Container<T>* Concat(Container<T>* other) const = 0;
+        virtual Container<T>* Clutch(Container<T>* other) = 0;
 
         virtual ~Container() = default;
 };

@@ -542,6 +542,14 @@ class SegmentedList : public Container<T>, public IEnumerable<T> {
             return result;
         }
 
+        SegmentedList<T>* Clutch(Container<T>* other) override {
+            if (!dynamic_cast<SegmentedList<T>*>(other) || !(dynamic_cast<SegmentedList<T>*>(other))->Segments || (dynamic_cast<SegmentedList<T>*>(other))->Elements_Size <= 0) return this;
+            for (int i = 0; i < dynamic_cast<SegmentedList<T>*>(other)->GetSize(); i++) {
+                this->Append(dynamic_cast<SegmentedList<T>*>(other)->Get(i));
+            }
+            return this;
+        }
+
         std::string toString() const {
             std::ostringstream oss;
             oss << "[";

@@ -186,6 +186,7 @@ class DynamicArray : public Container<T>, public IEnumerable<T> {
 
         DynamicArray<T>* GetSubContainer(int startIndex, int endIndex) const override;
         DynamicArray<T>* Concat(Container<T>* other) const override;
+        DynamicArray<T>* Clutch(Container<T>* other) override;
 
         std::string toString() const noexcept;
 
@@ -471,6 +472,16 @@ DynamicArray<T>* DynamicArray<T>::Concat(Container<T>* other) const {
     }
     return result;
 }
+
+template <typename T>
+DynamicArray<T>* DynamicArray<T>::Clutch(Container<T>* other) {
+    if (!dynamic_cast<DynamicArray<T>*>(other) || !(dynamic_cast<DynamicArray<T>*>(other))->Data || (dynamic_cast<DynamicArray<T>*>(other))->Size <= 0) return this;
+    for (int i = 0; i < (dynamic_cast<DynamicArray<T>*>(other))->Size; i++) {
+        this->Append((dynamic_cast<DynamicArray<T>*>(other))->Data[i]);
+    }
+    return this;
+}
+
 
 template <typename T>
 std::string DynamicArray<T>::toString() const noexcept {

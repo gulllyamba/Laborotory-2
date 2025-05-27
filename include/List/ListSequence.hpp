@@ -88,6 +88,19 @@ class ListSequence : public Sequence<T>, public IEnumerable<T> {
     protected:
         LinkedList<T>* list;
 
+        T Get(int index) const override {
+            return list->Get(index);
+        }
+        T GetFirst() const override {
+            return list->GetFirst();
+        }
+        T GetLast() const override {
+            return list->GetLast();
+        }
+        int GetSize() const override {
+            return list->GetSize();
+        }
+
         ListSequence<T>* SetInternal(int index, const T& value) {
             list->Set(index, value);
             return this;
@@ -167,6 +180,17 @@ class ListSequence : public Sequence<T>, public IEnumerable<T> {
         }
         ListSequence(const LinkedList<T>& other) {
             list = new LinkedList<T>(other);
+        }
+
+        ListSequence<T>& operator=(const ListSequence<T>& other) noexcept {
+            *list = *other.list;
+            return *this;
+        }
+        ListSequence<T>& operator=(ListSequence<T>&& other) noexcept {
+            delete list;
+            list = other.list;
+            other.list = nullptr;
+            return *this;
         }
 
         T& operator[](int index) {

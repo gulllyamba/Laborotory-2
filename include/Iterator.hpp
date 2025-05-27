@@ -2,6 +2,7 @@
 #define ITERATOR_HPP
 
 #include <stdexcept>
+#include <memory>
 
 template <typename T, bool IsConst>
 class IIterator {

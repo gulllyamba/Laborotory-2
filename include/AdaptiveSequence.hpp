@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <functional>
 #include "Iterator.hpp"
 #include "Container.hpp"
 
@@ -459,6 +460,14 @@ class AdaptiveSequence : public Container<T>, public IEnumerable<T> {
             }
             return result;
         }   
+
+        AdaptiveSequence<T>* Clutch(Container<T>* other) override {
+            if (!dynamic_cast<AdaptiveSequence<T>*>(other) || !(dynamic_cast<AdaptiveSequence<T>*>(other))->Data || (dynamic_cast<AdaptiveSequence<T>*>(other))->Size <= 0) return this;
+            for (int i = 0; i < (dynamic_cast<AdaptiveSequence<T>*>(other))->Size; i++) {
+                this->Append(dynamic_cast<AdaptiveSequence<T>*>(other)->Get(i));
+            }
+            return this;
+        } 
 
         template <typename Container>
         AdaptiveSequence<T>* From(const Container& container) {

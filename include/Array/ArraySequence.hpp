@@ -124,7 +124,18 @@ class ArraySequence : public Sequence<T>, public IEnumerable<T> {
     protected:
         DynamicArray<T>* array;
 
-        virtual int GetCapacity() const = 0;
+        T Get(int index) const override {
+            return this->array->Get(index);
+        }
+        T GetFirst() const override {
+            return this->array->GetFirst();
+        }
+        T GetLast() const override {
+            return this->array->GetLast();
+        }
+        int GetSize() const override {
+            return this->array->GetSize();
+        }
 
         ArraySequence<T>* ReserveInternal(int newCapacity) {
             array->Reserve(newCapacity);
@@ -210,6 +221,21 @@ class ArraySequence : public Sequence<T>, public IEnumerable<T> {
         }
         ArraySequence(const DynamicArray<T>& other) {
             array = new DynamicArray<T>(other);
+        }
+
+        int GetCapacity() const {
+            return this->array->GetCapacity();
+        }
+
+        ArraySequence<T>& operator=(const ArraySequence<T>& other) noexcept {
+            *array = *other.array;
+            return *this;
+        }
+        ArraySequence<T>& operator=(ArraySequence<T>&& other) noexcept {
+            delete array;
+            array = other.array;
+            other.array = nullptr;
+            return *this;
         }
 
         T& operator[](int index) {

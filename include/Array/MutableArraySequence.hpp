@@ -34,9 +34,6 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
         int GetSize() const override {
             return this->array->GetSize();
         }
-        int GetCapacity() const override{
-            return this->array->GetCapacity();
-        }
 
         MutableArraySequence<T>* Reserve(int newCapacity) {
             return dynamic_cast<MutableArraySequence<T>*>(Instance()->ReserveInternal(newCapacity));

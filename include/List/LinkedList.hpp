@@ -169,6 +169,7 @@ class LinkedList : public Container<T>, public IEnumerable<T> {
 
         LinkedList<T>* GetSubContainer(int startIndex, int endIndex) const override;
         LinkedList<T>* Concat(Container<T>* other) const override;
+        LinkedList<T>* Clutch(Container<T>* other) override;
 
         std::string toString() const noexcept;
 
@@ -644,6 +645,35 @@ LinkedList<T>* LinkedList<T>::Concat(Container<T>* other) const {
     }
     result->Size += (dynamic_cast<LinkedList<T>*>(other))->Size;
     return result;
+}
+
+template <typename T>
+LinkedList<T>* LinkedList<T>::Clutch(Container<T>* other) {
+    if (!dynamic_cast<LinkedList<T>*>(other) || !(dynamic_cast<LinkedList<T>*>(other))->Head || !(dynamic_cast<LinkedList<T>*>(other))->Last || (dynamic_cast<LinkedList<T>*>(other))->Size <= 0) return this;
+    TNode<T>* Actual_Node = (dynamic_cast<LinkedList<T>*>(other))->Head;
+    if (this->Size == 0) {
+        this->Head = new TNode<T>(Actual_Node->Value);
+        this->Last = this->Head;
+        for (int i = 1; i < (dynamic_cast<LinkedList<T>*>(other))->Size; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+            this->Last->Next_Node = new TNode<T>(Actual_Node->Value);
+            this->Last->Next_Node->Prev_Node = this->Last;
+            this->Last = this->Last->Next_Node;
+        }
+    }
+    else {
+        this->Last->Next_Node = new TNode<T>(Actual_Node->Value);
+        this->Last->Next_Node->Prev_Node = this->Last;
+        this->Last = this->Last->Next_Node;
+        for (int i = 1; i < (dynamic_cast<LinkedList<T>*>(other))->Size; i++) {
+            Actual_Node = Actual_Node->Next_Node;
+            this->Last->Next_Node = new TNode<T>(Actual_Node->Value);
+            this->Last->Next_Node->Prev_Node = this->Last;
+            this->Last = this->Last->Next_Node;
+        }
+    }
+    this->Size += (dynamic_cast<LinkedList<T>*>(other))->Size;
+    return this;
 }
 
 template <typename T>
