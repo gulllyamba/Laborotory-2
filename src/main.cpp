@@ -33,226 +33,226 @@ std::string toString(const ImmutableArraySequence<T>& array) {
 int main() {
     // SEGMENTED LIST
 
-    int items[] = {1, 2, 3, 4, 5};
-    SegmentedList<int>* A = new SegmentedList<int>(items, 5);
-    SegmentedList<int>* B = new SegmentedList<int>(items, 5);
-    SegmentedList<int>* C = new SegmentedList<int>();
-    SegmentedList<int>* D = new SegmentedList<int>();
-    SegmentedList<int>* E = new SegmentedList<int>(items, 5);
-    SegmentedList<int>* F = new SegmentedList<int>(items, 5);
+    // int items[] = {1, 2, 3, 4, 5};
+    // SegmentedList<int>* A = new SegmentedList<int>(items, 5);
+    // SegmentedList<int>* B = new SegmentedList<int>(items, 5);
+    // SegmentedList<int>* C = new SegmentedList<int>();
+    // SegmentedList<int>* D = new SegmentedList<int>();
+    // SegmentedList<int>* E = new SegmentedList<int>(items, 5);
+    // SegmentedList<int>* F = new SegmentedList<int>(items, 5);
 
-    std::cout << "Iterator cout:\n";
-    for (SLIterator<int> it = A->begin(); it != A->end(); ++it) {
-        std::cout << *it << " ";
-    }
-    std::cout << "\n\n";
+    // std::cout << "Iterator cout:\n";
+    // for (SLIterator<int> it = A->begin(); it != A->end(); ++it) {
+    //     std::cout << *it << " ";
+    // }
+    // std::cout << "\n\n";
 
-    std::cout << "Работа с Size = 0:\n";
-    C->Append(1);
-    std::cout << C->toString_Segments() << "\t" << C->GetSize() << "\n"; 
-    D->Prepend(5);
-    std::cout << D->toString_Segments() << "\t" << D->GetSize() << "\n\n"; 
+    // std::cout << "Работа с Size = 0:\n";
+    // C->Append(1);
+    // std::cout << C->toString_Segments() << "\t" << C->GetSize() << "\n"; 
+    // D->Prepend(5);
+    // std::cout << D->toString_Segments() << "\t" << D->GetSize() << "\n\n"; 
 
-    std::cout << "Append:\n";
-    std::cout << A->toString_Segments() << "\t" << A->GetSize() << "\n";
-    for (int i = 0; i < 16; i++) {
-        A->Append(i);
-        std::cout << A->toString_Segments() << "\t" << A->GetSize() << " " << A->GetCapacity() << "\n";
-    }
-    for (int i = 0; i < A->GetSize(); i++) {
-        std::cout << A->Get(i) << " ";
-    }
-    std::cout << "\n\n";
+    // std::cout << "Append:\n";
+    // std::cout << A->toString_Segments() << "\t" << A->GetSize() << "\n";
+    // for (int i = 0; i < 16; i++) {
+    //     A->Append(i);
+    //     std::cout << A->toString_Segments() << "\t" << A->GetSize() << " " << A->GetCapacity() << "\n";
+    // }
+    // for (int i = 0; i < A->GetSize(); i++) {
+    //     std::cout << A->Get(i) << " ";
+    // }
+    // std::cout << "\n\n";
 
-    std::cout << "Prepend:\n";
-    std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
-    for (int i = 0; i < 16; i++) {
-        B->Prepend(i);
-        std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
-    }
-    for (int i = 0; i < B->GetSize(); i++) {
-        std::cout << B->Get(i) << " ";
-    }
-    std::cout << "\n\n";
+    // std::cout << "Prepend:\n";
+    // std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
+    // for (int i = 0; i < 16; i++) {
+    //     B->Prepend(i);
+    //     std::cout << B->toString_Segments() << "\t" << B->GetSize() << " " << B->GetCapacity() << "\n";
+    // }
+    // for (int i = 0; i < B->GetSize(); i++) {
+    //     std::cout << B->Get(i) << " ";
+    // }
+    // std::cout << "\n\n";
 
-    std::cout << "Set:\n";
-    for (int i = 0; i < E->GetSize(); i++) {
-        E->Set(i, i * 10);
-    }
-    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    std::cout << "\n";
+    // std::cout << "Set:\n";
+    // for (int i = 0; i < E->GetSize(); i++) {
+    //     E->Set(i, i * 10);
+    // }
+    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // std::cout << "\n";
 
-    std::cout << "InsertAt:\n";
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -10);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -9);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -8);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -7);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(F->GetSize(), -6);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->InsertAt(0, -5);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // std::cout << "InsertAt:\n";
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(F->GetSize(), -10);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(F->GetSize(), -9);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(F->GetSize(), -8);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(F->GetSize(), -7);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(F->GetSize(), -6);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->InsertAt(0, -5);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
 
-    std::cout << "\n";
-    std::cout << "Resize:\n";
-    F->Resize(5);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
-    F->Resize(2);
-    std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // std::cout << "\n";
+    // std::cout << "Resize:\n";
+    // F->Resize(5);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
+    // F->Resize(2);
+    // std::cout << F->toString_Segments() << "\t" << F->GetSize() << "\n";
 
-    std::cout << "\n";
-    std::cout << "RemoveAt:\n";
-    int E_size = E->GetSize();
-    for (int i = 0; i < E_size; i++) {
-        E->RemoveAt(0);
-        std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    }
+    // std::cout << "\n";
+    // std::cout << "RemoveAt:\n";
+    // int E_size = E->GetSize();
+    // for (int i = 0; i < E_size; i++) {
+    //     E->RemoveAt(0);
+    //     std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // }
 
-    std::cout << "\n";
-    std::cout << "Работа с Size = 0:\n";
-    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    E->Append(1);
-    std::cout << "Append: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    E->RemoveAt(0);
-    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    E->Prepend(9);
-    std::cout << "Prepend: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    E->RemoveAt(0);
-    std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    E->InsertAt(0, 1);
-    std::cout << "InsertAt: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
-    E->InsertAt(1, 2);
-    std::cout << "InsertAt: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // std::cout << "\n";
+    // std::cout << "Работа с Size = 0:\n";
+    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // E->Append(1);
+    // std::cout << "Append: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // E->RemoveAt(0);
+    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // E->Prepend(9);
+    // std::cout << "Prepend: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // E->RemoveAt(0);
+    // std::cout << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // E->InsertAt(0, 1);
+    // std::cout << "InsertAt: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
+    // E->InsertAt(1, 2);
+    // std::cout << "InsertAt: " << E->toString_Segments() << "\t" << E->GetSize() << "\n";
 
-    std::cout << "\n";
-    std::cout << "GetSubSegmentedList:\n";
-    SegmentedList<int>* G = A->GetSubContainer(3, 14);
-    std::cout << G->toString_Segments() << "\t" << G->GetSize() << "\n";
+    // std::cout << "\n";
+    // std::cout << "GetSubSegmentedList:\n";
+    // SegmentedList<int>* G = A->GetSubContainer(3, 14);
+    // std::cout << G->toString_Segments() << "\t" << G->GetSize() << "\n";
 
-    std::cout << "\n";
-    std::cout << "Concat:\n";
-    SegmentedList<int>* zero = new SegmentedList<int>();
-    SegmentedList<int>* H = zero->Concat(F);
-    std::cout << H->toString_Segments() << "\t" << H->GetSize() << "\n\n";
+    // std::cout << "\n";
+    // std::cout << "Concat:\n";
+    // SegmentedList<int>* zero = new SegmentedList<int>();
+    // SegmentedList<int>* H = zero->Concat(F);
+    // std::cout << H->toString_Segments() << "\t" << H->GetSize() << "\n\n";
 
-    std::function<int(int)> square = [](int x) ->int {return x * x;};
-    std::function<bool(int)> If = [](int x) ->int {return x > 0;};
-    std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
-    SegmentedList<int>* Map = G->Map(square);
-    SegmentedList<int>* Where = G->Where(If);
-    std::cout << "Map: " << Map->toString_Segments() << "\n";
-    std::cout << "\n";
-    std::cout << "Where: " << Where->toString_Segments() << "\n";
-    std::cout << "\n";
-    std::cout << "Reduce: " << G->Reduce(foo, 4) << "\n";
-    std::cout << "\n";
+    // std::function<int(int)> square = [](int x) ->int {return x * x;};
+    // std::function<bool(int)> If = [](int x) ->int {return x > 0;};
+    // std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
+    // SegmentedList<int>* Map = G->Map(square);
+    // SegmentedList<int>* Where = G->Where(If);
+    // std::cout << "Map: " << Map->toString_Segments() << "\n";
+    // std::cout << "\n";
+    // std::cout << "Where: " << Where->toString_Segments() << "\n";
+    // std::cout << "\n";
+    // std::cout << "Reduce: " << G->Reduce(foo, 4) << "\n";
+    // std::cout << "\n";
 
-    std::vector<std::string> temp(5, "1234");
-    SegmentedList<std::string>* From = new SegmentedList<std::string>();
-    From->From(temp);
-    std::cout << "From: " << From->toString_Segments() << "\n";
-    SegmentedList<int>* Map_2 = From->Map<int>([](std::string s){
-        return std::atoi(s.c_str());
-    });
-    std::cout << "\n";
-    std::cout << "Map из типа в тип: " << Map_2->toString_Segments() << '\n';
+    // std::vector<std::string> temp(5, "1234");
+    // SegmentedList<std::string>* From = new SegmentedList<std::string>();
+    // From->From(temp);
+    // std::cout << "From: " << From->toString_Segments() << "\n";
+    // SegmentedList<int>* Map_2 = From->Map<int>([](std::string s){
+    //     return std::atoi(s.c_str());
+    // });
+    // std::cout << "\n";
+    // std::cout << "Map из типа в тип: " << Map_2->toString_Segments() << '\n';
 
-    std::cout << "\n";
-    int aaa[] = {123, 345, 678};
-    SegmentedList<int>* for_FlatMap = new SegmentedList<int>(aaa, 3);
-    std::cout << "for_FlatMap: "<< for_FlatMap->toString_Segments() << "\n";
-    SegmentedList<int>* answer = for_FlatMap->FlatMap<int>([](int n) {
-        SegmentedList<int>* tmp = new SegmentedList<int>();
-        n = abs(n);
-        while (n > 0) {
-            tmp->Append(n % 10);
-            n /= 10;
-        }
-        return tmp;
-    });
-    std::cout << "FlatMap: "<< answer->toString_Segments() << "\n";
+    // std::cout << "\n";
+    // int aaa[] = {123, 345, 678};
+    // SegmentedList<int>* for_FlatMap = new SegmentedList<int>(aaa, 3);
+    // std::cout << "for_FlatMap: "<< for_FlatMap->toString_Segments() << "\n";
+    // SegmentedList<int>* answer = for_FlatMap->FlatMap<int>([](int n) {
+    //     SegmentedList<int>* tmp = new SegmentedList<int>();
+    //     n = abs(n);
+    //     while (n > 0) {
+    //         tmp->Append(n % 10);
+    //         n /= 10;
+    //     }
+    //     return tmp;
+    // });
+    // std::cout << "FlatMap: "<< answer->toString_Segments() << "\n";
 
-    std::cout << "\n";
-    int values[] = {1, 2, 3, 4, 5};
-    int f[] = {0, 0, 0, 0, 0};
-    int ff[] = {-1, -2, -3, -4, -5};
-    SegmentedList<int>* I = new SegmentedList<int>(values, 5);
-    SegmentedList<int>* J = new SegmentedList<int>(f, 5);
-    SegmentedList<int>* K = new SegmentedList<int>(ff, 5);
-    SegmentedList<std::tuple<int, int, int>>* ans = I->Zip(I, J, K);
-    std::cout << "Zip: [";
-    for (int i = 0; i < ans->GetSize(); i++) {
-        std::tuple<int, int, int> temp = ans->Get(i);
-        std::cout << "("
-        << std::get<0>(temp) << ", "
-        << std::get<1>(temp)  << ", "
-        << std::get<2>(temp) <<  ") ";
-    }
+    // std::cout << "\n";
+    // int values[] = {1, 2, 3, 4, 5};
+    // int f[] = {0, 0, 0, 0, 0};
+    // int ff[] = {-1, -2, -3, -4, -5};
+    // SegmentedList<int>* I = new SegmentedList<int>(values, 5);
+    // SegmentedList<int>* J = new SegmentedList<int>(f, 5);
+    // SegmentedList<int>* K = new SegmentedList<int>(ff, 5);
+    // SegmentedList<std::tuple<int, int, int>>* ans = I->Zip(I, J, K);
+    // std::cout << "Zip: [";
+    // for (int i = 0; i < ans->GetSize(); i++) {
+    //     std::tuple<int, int, int> temp = ans->Get(i);
+    //     std::cout << "("
+    //     << std::get<0>(temp) << ", "
+    //     << std::get<1>(temp)  << ", "
+    //     << std::get<2>(temp) <<  ") ";
+    // }
 
-    std::cout << "\n";
-    std::tuple<SegmentedList<int>, SegmentedList<int>, SegmentedList<int>>* res = ans->UnZip<int, int, int>();
+    // std::cout << "\n";
+    // std::tuple<SegmentedList<int>, SegmentedList<int>, SegmentedList<int>>* res = ans->UnZip<int, int, int>();
     
-    auto& first = std::get<0>(*res);
-    auto& second = std::get<1>(*res);
-    auto& third = std::get<2>(*res);
+    // auto& first = std::get<0>(*res);
+    // auto& second = std::get<1>(*res);
+    // auto& third = std::get<2>(*res);
 
-    std::cout << "\nUnZip: (" << first.toString_Segments() << ", " << second.toString_Segments() << ", " << third.toString_Segments() << ")\n\n";
+    // std::cout << "\nUnZip: (" << first.toString_Segments() << ", " << second.toString_Segments() << ", " << third.toString_Segments() << ")\n\n";
 
-    double pupupu[] = {1.1, 2.2, 3.3};
-    SegmentedList<double> temp1(pupupu, 3);
-    SegmentedList<double> temp2(pupupu, 3);
-    SegmentedList<double> temp3(pupupu, 3);
-    SegmentedList<double> pupupu_x3[] = {temp1, temp2, temp3};
-    SegmentedList<SegmentedList<double>>* BBB = new SegmentedList<SegmentedList<double>>(pupupu_x3, 3);
-    SegmentedList<SegmentedList<double>> array[] = {*BBB, *BBB, *BBB};
-    SegmentedList<SegmentedList<SegmentedList<double>>>* II = new SegmentedList<SegmentedList<SegmentedList<double>>>(array, 3);
-    std::cout << "Вложенные SegmentedList: [";
-    for (int i = 0; i < II->GetSize(); i++) {
-        for (int j = 0; j < BBB->GetSize(); j++) {
-            std::cout << ((*II)[i])[j].toString_Segments() << " ";
-        }
-    }
-    std::cout << "]\n\n";
+    // double pupupu[] = {1.1, 2.2, 3.3};
+    // SegmentedList<double> temp1(pupupu, 3);
+    // SegmentedList<double> temp2(pupupu, 3);
+    // SegmentedList<double> temp3(pupupu, 3);
+    // SegmentedList<double> pupupu_x3[] = {temp1, temp2, temp3};
+    // SegmentedList<SegmentedList<double>>* BBB = new SegmentedList<SegmentedList<double>>(pupupu_x3, 3);
+    // SegmentedList<SegmentedList<double>> array[] = {*BBB, *BBB, *BBB};
+    // SegmentedList<SegmentedList<SegmentedList<double>>>* II = new SegmentedList<SegmentedList<SegmentedList<double>>>(array, 3);
+    // std::cout << "Вложенные SegmentedList: [";
+    // for (int i = 0; i < II->GetSize(); i++) {
+    //     for (int j = 0; j < BBB->GetSize(); j++) {
+    //         std::cout << ((*II)[i])[j].toString_Segments() << " ";
+    //     }
+    // }
+    // std::cout << "]\n\n";
 
-    std::cout << "Вложенный vector:\n";
-    std::vector<int> temp11 = {1, 2, 3};
-    std::vector<int> temp22 = {4, 5, 6};
-    std::vector<int> temp33 = {7, 8, 9};
-    std::vector<int> items_10[] = {temp11, temp22, temp33};
-    SegmentedList<std::vector<int>>* JJ = new SegmentedList<std::vector<int>>(items_10, 3);
-    for (int i = 0; i < JJ->GetSize(); i++) {
-        for (int j = 0; j < 3; j++) {
-            std::cout << (*JJ)[i][j] << " ";
-        }
-        std::cout << "\n";
-    }
+    // std::cout << "Вложенный vector:\n";
+    // std::vector<int> temp11 = {1, 2, 3};
+    // std::vector<int> temp22 = {4, 5, 6};
+    // std::vector<int> temp33 = {7, 8, 9};
+    // std::vector<int> items_10[] = {temp11, temp22, temp33};
+    // SegmentedList<std::vector<int>>* JJ = new SegmentedList<std::vector<int>>(items_10, 3);
+    // for (int i = 0; i < JJ->GetSize(); i++) {
+    //     for (int j = 0; j < 3; j++) {
+    //         std::cout << (*JJ)[i][j] << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
 
-    delete BBB;
-    delete I;
-    delete J;
-    delete K;
-    delete II;
-    delete JJ;
-    delete ans;
-    delete res;
+    // delete BBB;
+    // delete I;
+    // delete J;
+    // delete K;
+    // delete II;
+    // delete JJ;
+    // delete ans;
+    // delete res;
 
-    delete A;
-    delete B;
-    delete C;
-    delete D;
-    delete E;
-    delete F;
-    delete G;
-    delete H;
-    delete Map;
-    delete Where;
-    delete From;
-    delete Map_2;
-    delete for_FlatMap;
+    // delete A;
+    // delete B;
+    // delete C;
+    // delete D;
+    // delete E;
+    // delete F;
+    // delete G;
+    // delete H;
+    // delete Map;
+    // delete Where;
+    // delete From;
+    // delete Map_2;
+    // delete for_FlatMap;
 
     ////////////////////////////////////////////////////////////////////////////
     // ADAPTIVE SEQUENCE
