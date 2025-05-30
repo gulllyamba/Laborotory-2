@@ -139,6 +139,44 @@ int main() {
     // SegmentedList<int>* H = zero->Concat(F);
     // std::cout << H->toString_Segments() << "\t" << H->GetSize() << "\n\n";
 
+    // std::function<int(int)> square = [](int x) ->int {return x * x;};
+    // std::function<bool(int)> If = [](int x) ->int {return x > 0;};
+    // std::function<int(int, int)> foo = [](int x1, int x2) ->int {return 2 * x1 + 3 * x2;};
+    // SegmentedList<int>* Map = G->Map(square);
+    // SegmentedList<int>* Where = G->Where(If);
+    // std::cout << "Map: " << Map->toString_Segments() << "\n";
+    // std::cout << "\n";
+    // std::cout << "Where: " << Where->toString_Segments() << "\n";
+    // std::cout << "\n";
+    // std::cout << "Reduce: " << G->Reduce(foo, 4) << "\n";
+    // std::cout << "\n";
+
+    // std::vector<std::string> temp(5, "1234");
+    // SegmentedList<std::string>* From = new SegmentedList<std::string>();
+    // From->From(temp);
+    // std::cout << "From: " << From->toString_Segments() << "\n";
+    // SegmentedList<int>* Map_2 = From->Map<int>([](std::string s){
+    //     return std::atoi(s.c_str());
+    // });
+    // std::cout << "\n";
+    // std::cout << "Map из типа в тип: " << Map_2->toString_Segments() << '\n';
+
+    // std::cout << "\n";
+    // int aaa[] = {123, 345, 678};
+    // SegmentedList<int>* for_FlatMap = new SegmentedList<int>(aaa, 3);
+    // std::cout << "for_FlatMap: "<< for_FlatMap->toString_Segments() << "\n";
+    // SegmentedList<int>* answer = for_FlatMap->FlatMap<int>([](int n) {
+    //     SegmentedList<int>* tmp = new SegmentedList<int>();
+    //     n = abs(n);
+    //     while (n > 0) {
+    //         tmp->Append(n % 10);
+    //         n /= 10;
+    //     }
+    //     return tmp;
+    // });
+    // std::cout << "FlatMap: "<< answer->toString_Segments() << "\n";
+
+
     // double pupupu[] = {1.1, 2.2, 3.3};
     // SegmentedList<double> temp1(pupupu, 3);
     // SegmentedList<double> temp2(pupupu, 3);
@@ -180,6 +218,11 @@ int main() {
     // delete F;
     // delete G;
     // delete H;
+    // delete Map;
+    // delete Where;
+    // delete From;
+    // delete Map_2;
+    // delete for_FlatMap;
 
     ////////////////////////////////////////////////////////////////////////////
     // ADAPTIVE SEQUENCE

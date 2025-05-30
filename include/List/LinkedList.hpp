@@ -803,6 +803,8 @@ std::tuple<LinkedList<Tuples>...>* LinkedList<T>::UnZip() const {
     return result;
 }
 
+
+
 template <typename T>
 void LinkedList<T>::Delete() noexcept {
     while (Head) {

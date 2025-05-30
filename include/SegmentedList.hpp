@@ -550,6 +550,76 @@ class SegmentedList : public Container<T>, public IEnumerable<T> {
             return this;
         }
 
+        template <typename Container>
+        SegmentedList<T>* From(const Container& container) {
+            delete Segments;
+            Segments_Size = 0;
+            Elements_Size = 0;
+            int size = 0;
+            for (auto it = container.begin(); it != container.end(); ++it) size++;
+            T* items = new T[size]{};
+            for (auto it = container.begin(), i = 0; it != container.end(); ++it, i++) {
+                items[i] = *it;
+            }
+            Segments_Size = (size + (MAX_SEGMENT_CAPACITY / 2) - 1) / (MAX_SEGMENT_CAPACITY / 2);
+            Segments = new DynamicArray<Segment<T>>(Segments_Size);
+            for (int i = 0; i < Segments_Size; i++) {
+                int start = i * (MAX_SEGMENT_CAPACITY / 2);
+                int array_size = std::min(MAX_SEGMENT_CAPACITY / 2, size - start);
+                Elements_Size += array_size;
+                if (items) (*Segments)[i] = Segment<T>(items + start, array_size);
+                else (*Segments)[i] = Segment<T>(array_size);
+            }
+            if (Segments_Size > 0) (*Segments)[Segments_Size - 1].Array->Reserve(MAX_SEGMENT_CAPACITY);
+            delete [] items;
+            return this;
+        }
+
+        template <typename U>
+        SegmentedList<U>* Map(std::function<U(T)> f) const {
+            U* items = new U[Elements_Size]{};
+            for (int i = 0; i < Elements_Size; i++) {
+                items[i] = f(Get(i));
+            }
+            SegmentedList<U>* list = new SegmentedList<U>(items, Elements_Size);
+            delete [] items;
+            return list;
+        }
+
+        template <typename U>
+        SegmentedList<T>* FlatMap(std::function<SegmentedList<T>*(U)> f) const {
+            SegmentedList<T>* result = new SegmentedList<T>();
+            for (auto it = begin(); it != end(); ++it) {
+                SegmentedList<T>* temp = f(*it);
+                for (auto tempIt = temp->begin(); tempIt != temp->end(); ++tempIt) {
+                    result->Append(*tempIt);
+                }
+                if (temp) delete temp;
+            }
+            return result;
+        }
+
+        SegmentedList<T>* Where(std::function<bool(T)> f) const {
+            SegmentedList<T>* result = new SegmentedList<T>();
+            if (!Segments || Elements_Size <= 0) return result;
+            for (int i = 0; i < Elements_Size; i++) {
+                T value = Get(i);
+                if (f(value)) {
+                    result->Append(value);
+                }
+            }
+            return result;
+        }
+
+        T Reduce(std::function<T(T, T)> f, const T& c) const {
+            if (!Segments || Elements_Size <= 0) return c;
+            T answer = f(Get(0), c);
+            for (int i = 1; i < Elements_Size; i++) {
+                answer = f(Get(i), answer);
+            }
+            return answer;
+        }
+
         std::string toString() const {
             std::ostringstream oss;
             oss << "[";
@@ -597,6 +667,9 @@ class SegmentedList : public Container<T>, public IEnumerable<T> {
         int Elements_Size = 0;
 
         friend class Segment<T>;
+
+        template <typename U>
+        friend class SegmentedList;
 };  
 
 template <typename T>
