@@ -745,7 +745,7 @@ int main() {
 
     // std::vector<std::string> temp(5, "1234");
     // MutableArraySequence<std::string>* result = new MutableArraySequence<std::string>();
-    // result = result->From(temp);
+    // result->From(temp);
     // std::cout << "From: " << toString(result) << "\t" << result->GetCapacity() << "\n";
     // std::cout << "\n";
     // MutableArraySequence<int>* B = result->Map<int>([](std::string s){
@@ -931,7 +931,7 @@ int main() {
 
     // std::vector<std::string> temp(5, "1234");
     // MutableListSequence<std::string>* result = new MutableListSequence<std::string>();
-    // result = result->From(temp);
+    // result->From(temp);
     // std::cout << "From: " << toString(result) << "\n";
     // std::cout << "\n";
     // MutableListSequence<int>* B = result->Map<int>([](std::string s){
@@ -1299,7 +1299,7 @@ int main() {
 
     // std::vector<std::string> temp(5, "1234");
     // LinkedList<std::string>* From = new LinkedList<std::string>();
-    // From = From->From(temp);
+    // From->From(temp);
     // std::cout << "From: " << From->toString() << "\n";
     // std::cout << "\n";
     // LinkedList<int>* Map = From->Map<int>([](std::string s){

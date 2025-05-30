@@ -69,10 +69,8 @@ class MutableListSequence : virtual public ListSequence<T>, virtual public Mutab
 
         template <typename Container>
         MutableListSequence<T>* From(const Container& container) {
-            LinkedList<T>* temp_list = Instance()->list->From(container);
-            MutableListSequence<T>* result = new MutableListSequence<T>(*temp_list);
-            delete temp_list;
-            return result;
+            Instance()->list->From(container);
+            return this;
         }
         template <typename U>
         MutableListSequence<U>* Map(std::function<U(T)> f) const {

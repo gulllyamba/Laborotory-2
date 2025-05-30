@@ -72,10 +72,8 @@ class MutableArraySequence : virtual public ArraySequence<T>, virtual public Mut
 
         template <typename Container>
         MutableArraySequence<T>* From(const Container& container) {
-            DynamicArray<T>* temp_arr = Instance()->array->From(container);
-            MutableArraySequence<T>* temp = new MutableArraySequence<T>(*temp_arr);
-            delete temp_arr;
-            return temp;
+            Instance()->array->From(container);
+            return this;
         }
         template <typename U>
         MutableArraySequence<U>* Map(std::function<U(T)> f) const {
