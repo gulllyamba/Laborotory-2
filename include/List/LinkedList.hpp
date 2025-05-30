@@ -760,7 +760,6 @@ T LinkedList<T>::Reduce(std::function<T(T, T)> f, const T& c) const {
 template <typename T>
 template <typename... Lists>
 LinkedList<std::tuple<T, typename Lists::value_type...>>* LinkedList<T>::Zip(const LinkedList<T>* first, const Lists*... lists) const {
-    if (!first) throw std::invalid_argument("First list is null");
     LinkedList<std::tuple<T, typename Lists::value_type...>>* result = new LinkedList<std::tuple<T, typename Lists::value_type...>>();
 
     auto it_first = first->begin();

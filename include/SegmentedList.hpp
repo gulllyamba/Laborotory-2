@@ -620,6 +620,49 @@ class SegmentedList : public Container<T>, public IEnumerable<T> {
             return answer;
         }
 
+        template <typename... Lists>
+        SegmentedList<std::tuple<T, typename Lists::value_type...>>* Zip(const SegmentedList<T>* first, const Lists*... lists) const {
+            SegmentedList<std::tuple<T, typename Lists::value_type...>>* result = new SegmentedList<std::tuple<T, typename Lists::value_type...>>();
+
+            auto it_first = first->begin();
+            auto iters = std::make_tuple(lists->begin()...);
+
+            auto all_valid = [&](const auto& iters) {
+                bool valid = it_first != first->end();
+                if (!valid) return false;
+
+                auto check = [&]<size_t... Is>(std::index_sequence<Is...>) {
+                    return ((std::get<Is>(iters) != lists->end()) && ...);
+                };
+                return valid && check(std::index_sequence_for<Lists...>{});
+            };
+
+            while (all_valid(iters)) {
+                auto tuple = std::apply([&](const auto&... its) {
+                    return std::make_tuple(*it_first, (*its)...);
+                }, iters);
+                result->Append(tuple);
+
+                ++it_first;
+                std::apply([](auto&... its) {
+                    ((++its), ...);
+                }, iters);
+            }
+            return result;
+        }
+
+        template <typename... Tuples>
+        std::tuple<SegmentedList<Tuples>...>* UnZip() const {
+            std::tuple<SegmentedList<Tuples>...>* result = new std::tuple<SegmentedList<Tuples>...>();
+            for (auto it = begin(); it != end(); ++it) {
+                auto unzip = [&]<size_t... Is>(std::index_sequence<Is...>) {
+                    ((std::get<Is>(*result).Append(std::get<Is>(*it))), ...);
+                };
+                unzip(std::index_sequence_for<Tuples...>{});
+            }
+            return result;
+        }
+
         std::string toString() const {
             std::ostringstream oss;
             oss << "[";
