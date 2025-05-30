@@ -92,7 +92,7 @@ using SLConstIterator = SegmentedListIterator<T, true>;
 template <typename T>
 class Segment {
     public:
-        Segment(T* items, int size) : Array(new DynamicArray<T>(items, size)), Array_Size(size) {}
+        Segment(const T* items, int size) : Array(new DynamicArray<T>(items, size)), Array_Size(size) {}
         Segment(int size) : Array(new DynamicArray<T>(size)), Array_Size(size) {}
         Segment() : Array(new DynamicArray<T>()), Array_Size(0) {}
         Segment(const Segment<T>& other) : Array(new DynamicArray<T>(*other.Array)), Array_Size(other.Array_Size) {}
@@ -180,7 +180,7 @@ class SegmentedList : public Container<T>, public IEnumerable<T> {
             return std::make_unique<const_iterator>(Segments, 0, 0);
         }
 
-        SegmentedList(T* items, int size) {
+        SegmentedList(const T* items, int size) {
             if (size < 0) throw std::invalid_argument("Size cannot be negative");
             Segments_Size = (size + (MAX_SEGMENT_CAPACITY / 2) - 1) / (MAX_SEGMENT_CAPACITY / 2);
             Segments = new DynamicArray<Segment<T>>(Segments_Size);
